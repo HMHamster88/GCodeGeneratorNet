@@ -1,6 +1,7 @@
 ﻿using CSScriptLibrary;
 using GCodeGeneratorNet.Core;
 using GCodeGeneratorNet.Graphics;
+using Microsoft.Win32;
 using OpenTK;
 using System;
 using System.Collections.Generic;
@@ -32,6 +33,12 @@ namespace GCodeGeneratorNet
             this.DataContext =
             workspace = new Workspace();
             ShowPathView();
+            this.Closing += MainWindow_Closing;
+        }
+
+        void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Properties.Settings.Default.Save();
         }
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
@@ -54,12 +61,50 @@ namespace GCodeGeneratorNet
 
         private void MenuItem_Click_1(object sender, RoutedEventArgs e)
         {
+            CompileAndView();
+        }
+
+        private void CompileAndView()
+        {
             var gcodes = workspace.Compiler.Compile(workspace.TextEditManager.Text);
             foreach (var g in gcodes)
                 g.ToString();
             var points = workspace.GCodeToPointsConverter.Convert(gcodes);
-            if(pathView != null)
+            if (pathView != null)
                 pathView.LoadPoints(points);
+        }
+
+        private void CommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            workspace.TextEditManager.New();
+        }
+
+        private void CommandBinding_Executed_1(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(workspace.TextEditManager.FilePath))
+            {
+                var dialog = new SaveFileDialog();
+                dialog.Filter = "C# script (*.csc)|*.csc";
+                if (dialog.ShowDialog() == true)
+                {
+                    workspace.TextEditManager.Save(dialog.FileName);
+                }
+            }
+            else
+            {
+                workspace.TextEditManager.Save(workspace.TextEditManager.FilePath);
+            }
+            CompileAndView();
+        }
+
+        private void CommandBinding_Executed_2(object sender, ExecutedRoutedEventArgs e)
+        {
+            var dialog = new OpenFileDialog();
+            dialog.Filter = "C# script (*.csc)|*.csc";
+            if (dialog.ShowDialog() == true)
+            {
+                workspace.TextEditManager.Open(dialog.FileName);
+            }
         }
     }
 }

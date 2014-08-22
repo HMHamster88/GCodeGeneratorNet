@@ -14,7 +14,8 @@ namespace GCodeGeneratorNet.Core
             var sb = new StringBuilder();
             sb.Append(gcode.Type);
             sb.Append(gcode.Code.ToString("D2"));
-            foreach (var prop in gcode.GetType().GetProperties().Where(p => p.PropertyType == typeof(float?) && ((float?)p.GetValue(gcode)).HasValue))
+            foreach (var prop in gcode.GetType().GetProperties().Where(p => p.PropertyType == typeof(float?) && ((float?)p.GetValue(gcode)).HasValue)
+                .Concat(gcode.GetType().GetProperties().Where(p => p.PropertyType == typeof(float))))
             {
                 sb.Append(" ");
                 sb.Append(prop.Name);

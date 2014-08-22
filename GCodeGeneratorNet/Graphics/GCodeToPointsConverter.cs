@@ -15,16 +15,24 @@ namespace GCodeGeneratorNet.Graphics
             bool absolute = true;
             var color = System.Drawing.Color.White;
             Vector3 position = new Vector3();
-            yield return new VertexPositionColor(position, color);
+            var list = new List<Vector3>();
+
+            list.Add(position);
+
             foreach(var code in codes)
             {
                 var points = code.GetPoints(position, absolute);
                 foreach (var p in points)
                 {
                     position = p;
-                    color = System.Drawing.Color.FromArgb(color.R - 10, color.G - 10, color.B - 10);
-                    yield return new VertexPositionColor(position, color);
+                    list.Add(position);
                 }
+            }
+
+            for (int i = 0; i < list.Count; i++ )
+            {
+                var c = i * 255 / list.Count;
+                yield return new VertexPositionColor(list[i], System.Drawing.Color.FromArgb(c, c, c));
             }
         }
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,21 +20,7 @@ namespace GCodeGeneratorNet.Core
             }
         }
 
-        private string text =
-@"
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using GCodeGeneratorNet.Core.GCodes;
-
-public static IEnumerable<IGCode> Generate()
-{
-    yield return new G90();
-    yield return new G00(0, 2);
-    yield return new G02(0, -2, 0, 0, -2);
-}
-
-";
+        private string text;
 
         public string Text
         {
@@ -45,6 +32,68 @@ public static IEnumerable<IGCode> Generate()
             {
                 text = value;
                 notifyPropertyChanged("Text");
+            }
+        }
+
+        private string filepath;
+
+        public string FilePath
+        {
+            get
+            {
+                return filepath;
+            }
+            set
+            {
+                filepath = value;
+                Properties.Settings.Default.LastFile = value;
+                notifyPropertyChanged("FilePath");
+            }
+        }
+
+        public void Save(string path)
+        {
+            File.WriteAllText(path, Text);
+            this.FilePath = path;
+        }
+        
+        public void Open(string path)
+        {
+            Text = File.ReadAllText(path);
+            this.FilePath = path;
+        }
+
+        public void New()
+        {
+            Text =
+                @"using OpenTK;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using GCodeGeneratorNet.Core;
+using GCodeGeneratorNet.Core.GCodes;
+using GCodeGeneratorNet.Core.Misc;
+
+public static IEnumerable<IGCode> Generate()
+{
+    GCodeGenerator gcg = new GCodeGenerator();
+    return gcg.Codes;
+}
+
+";
+            FilePath = null;
+        }
+
+        public TextEditManager()
+        {
+            FilePath = Properties.Settings.Default.LastFile;
+            if(!string.IsNullOrEmpty(FilePath) && File.Exists(FilePath))
+            {
+                Open(FilePath);
+            }
+            else
+            {
+                New();
             }
         }
     }

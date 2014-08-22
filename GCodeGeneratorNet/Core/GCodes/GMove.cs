@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace GCodeGeneratorNet.Core.GCodes
 {
-    public class G00 : IGCode
+    public class GMOVE : IGCode
     {
         public Type Type
         {
@@ -16,30 +16,40 @@ namespace GCodeGeneratorNet.Core.GCodes
 
         public int Code
         {
-            get { return 0; }
+            get { return Rapid ? 0 : 1; }
         }
 
         public string Description
         {
-            get { return "Run to"; }
+            get 
+            { 
+                if(Rapid)
+                    return "Rapid positioning";
+                return "Linear interpolation";
+            }
         }
 
+        public bool Rapid { get; private set; }
+        
         public float? X { get; private set; }
         public float? Y { get; private set; }
         public float? Z { get; private set; }
 
-        public G00(float? x = null, float? y = null, float? z = null)
+        public float? F { get; private set; }
+
+        public GMOVE(bool rapid, float? x = null, float? y = null, float? z = null, float? f = null)
         {
             this.X = x;
             this.Y = y;
             this.Z = z;
+            this.F = f;
+            this.Rapid = rapid;
         }
 
         public override string ToString()
         {
             return GCodeStringBuilder.GCodeToString(this);
         }
-
 
         public IEnumerable<Vector3> GetPoints(Vector3 initPos, bool absolute)
         {

@@ -1,20 +1,44 @@
 ﻿<Window x:Class="GCodeGeneratorNet.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="350" Width="525">
+        xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:gui="clr-namespace:GCodeGeneratorNet.Gui"
+        Title="MainWindow" Height="350" Width="525" >
+    <Window.CommandBindings>
+        <CommandBinding Command="New" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="Save" Executed="CommandBinding_Executed_1"/>
+        <CommandBinding Command="Open" Executed="CommandBinding_Executed_2"/>
+    </Window.CommandBindings>
+    <Window.InputBindings>
+        <KeyBinding Key="N" Modifiers="Control" Command="New"/>
+        <KeyBinding Key="S" Modifiers="Control" Command="Save"/>
+        <KeyBinding Key="O" Modifiers="Control" Command="Open"/>
+    </Window.InputBindings>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition/>
+            <RowDefinition/>
         </Grid.RowDefinitions>
         <Menu Grid.ColumnSpan="2">
             <MenuItem Header="File">
+                <MenuItem Header="New" Command="New"/>
+                <MenuItem Header="Save" Command="Save"/>
+                <MenuItem Header="Open" Command="Open"/>
                 <MenuItem Header="Compile" Click="MenuItem_Click_1"></MenuItem>
             </MenuItem>
             <MenuItem Header="View">
                 <MenuItem Header="Show 3D" Click="MenuItem_Click"/>
             </MenuItem>
         </Menu>
-        <TextBox TextWrapping="Wrap" AcceptsReturn="True" Grid.Row="1" Text="{Binding TextEditManager.Text}"/>
+        <avalonEdit:TextEditor SyntaxHighlighting="C#" Grid.Row="1" FontFamily="Consolas" FontSize="10pt">
+            <i:Interaction.Behaviors>
+                <gui:AvalonEditBehaviour GiveMeTheText="{Binding TextEditManager.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            </i:Interaction.Behaviors>
+        </avalonEdit:TextEditor>
+        <ListView Grid.Row="2" ItemsSource="{Binding Compiler.Errors}">
+            
+        </ListView>
     </Grid>
 </Window>
