@@ -34,7 +34,7 @@ namespace GCodeGeneratorNet.Core
         public float Tolerance { get; set; }
         public float ToolRadius { get; set; }
 
-        float ToolRadiusAndTolerance { get { return Tolerance + ToolRadius; } }
+        public float ToolRadiusAndTolerance { get { return Tolerance + ToolRadius; } }
 
         public float MaterialHeight { get; set; }
         public float SafetyHeight { get; set; }

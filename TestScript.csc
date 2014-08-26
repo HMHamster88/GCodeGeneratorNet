@@ -10,10 +10,42 @@ using GCodeGeneratorNet.Core.Misc;
 
 public static IEnumerable<IGCode> Generate()
 {
+	var center = new Vector2();
+	var sectorCount = 12;
+	var sectorAngle = Math.PI * 2 / sectorCount;
+	var sectorRadius = 140;
+	var centralHoleRadius = 8;
+	var shotButtonDistance = 110;
+	var shotButtonHoleRadius = 3;
+	
     GCodeGenerator gcg = new GCodeGenerator();
-    var myMatrix = new Matrix();
-    myMatrix.Translate(0, -30, MatrixOrder.Append);
-    gcg.Text("132abc", FontFamily.GenericSansSerif, 0, 20, myMatrix, 0, 0.1f);
+    
+    foreach(float z in GCodeGenerator.range(gcg.MaterialHeight, 0, gcg.VerticalStep))
+    {
+    	var startAngle = (Angle)(- sectorAngle / 2);
+    	var stopAngle = (Angle)( sectorAngle / 2);
+    	var startPoint = center + startAngle.HorizontalVector * (centralHoleRadius - gcg.ToolRadiusAndTolerance);
+    	var stopPoint = center + stopAngle.HorizontalVector * (centralHoleRadius - gcg.ToolRadiusAndTolerance);
+    	var startD = (startAngle - Math.PI / 2).HorizontalVector * gcg.ToolRadiusAndTolerance;
+    	var stopD = (stopAngle + Math.PI / 2).HorizontalVector * gcg.ToolRadiusAndTolerance;
+    	gcg.HorizontalFeedTo(startPoint + startD);	
+    	gcg.VerticalFeedTo(z);
+    	gcg.HorizontalFeedTo(startPoint);
+    	gcg.HorizontalArc(center, centralHoleRadius, startAngle, sectorAngle / 2, RotateDirection.CCW, ToolCompensation.In);
+    	gcg.HorizontalFeedTo(stopPoint + stopD);
+    	
+    	var startPoint2 = center + startAngle.HorizontalVector * (sectorRadius + gcg.ToolRadiusAndTolerance);
+    	var stopPoint2 = center + stopAngle.HorizontalVector * (sectorRadius + gcg.ToolRadiusAndTolerance);
+    	
+    	gcg.HorizontalFeedTo(stopPoint2 + stopD);
+    	gcg.HorizontalFeedTo(stopPoint2);
+    	gcg.HorizontalFeedTo(startPoint2);
+    	gcg.HorizontalFeedTo(startPoint2 + startD);
+    	
+    	gcg.HorizontalFeedTo(startPoint + startD);	
+    }
+    
+    gcg.RoundHole(new Vector2(shotButtonDistance, 0), shotButtonHoleRadius, gcg.MaterialHeight, 0);
     return gcg.Codes;
 }
 
