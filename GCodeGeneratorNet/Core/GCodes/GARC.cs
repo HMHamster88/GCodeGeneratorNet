@@ -75,15 +75,16 @@ namespace GCodeGeneratorNet.Core.GCodes
             var startAngle = XYAngle(initPos.Xy);
             var stopAngle = XYAngle(finish);
             var dir = (int)RotateDirection;
-            var distance = Math.Abs(startAngle - stopAngle);
+            var distance = RotateDirection == RotateDirection.CCW ? stopAngle - startAngle : startAngle - stopAngle;
             if(distance == 0)
             {
                 distance = Math.PI * 2;
             }
+            var steps = 40;
             var step = distance / 40;
-            for (double a = 0; a <= distance; a += step )
+            for (int i = 0; i < steps; i++)
             {
-                Angle angle = startAngle + a * dir;
+                Angle angle = startAngle + step * i * dir;
                 yield return new Vector3(center.X, center.Y, initPos.Z) + new Vector3((float)Math.Cos(angle), (float)Math.Sin(angle), 0) * radius;
             }
             yield return new Vector3(finish.X, finish.Y, initPos.Z);
