@@ -27,6 +27,7 @@
                 <MenuItem Header="Save" Command="Save"/>
                 <MenuItem Header="Open" Command="Open"/>
                 <MenuItem Header="Compile" Click="MenuItem_Click_1"></MenuItem>
+                <MenuItem Header="Export G code" Click="MenuItem_Click_2"/>
             </MenuItem>
             <MenuItem Header="View">
                 <MenuItem Header="Show 3D" Click="MenuItem_Click"/>

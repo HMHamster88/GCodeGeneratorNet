@@ -5,6 +5,7 @@ using Microsoft.Win32;
 using OpenTK;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -68,8 +69,6 @@ namespace GCodeGeneratorNet
         private void CompileAndView()
         {
             var gcodes = workspace.Compiler.Compile(workspace.TextEditManager.Text);
-            foreach (var g in gcodes)
-                g.ToString();
             var points = workspace.GCodeToPointsConverter.Convert(gcodes);
             if (pathView != null)
                 pathView.LoadPoints(points);
@@ -105,6 +104,25 @@ namespace GCodeGeneratorNet
             if (dialog.ShowDialog() == true)
             {
                 workspace.TextEditManager.Open(dialog.FileName);
+            }
+        }
+
+        private void MenuItem_Click_2(object sender, RoutedEventArgs e)
+        {
+            CompileAndView();
+            var dialog = new SaveFileDialog();
+            dialog.Filter = "GCode (*.nc)|*.nc";
+            if (dialog.ShowDialog() == true)
+            {
+                var gcodes = workspace.Compiler.Compile(workspace.TextEditManager.Text);
+                using(var file = dialog.OpenFile())
+                {
+                    var sr = new StreamWriter(file);
+                    foreach(var code in gcodes)
+                    {
+                        sr.WriteLine(code.ToString());
+                    }
+                }
             }
         }
     }
