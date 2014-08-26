@@ -29,14 +29,14 @@ namespace GCodeGeneratorNet.Core.GCodes
 
         public float X { get; private set; }
         public float Y { get; private set; }
-        public float Z { get; private set; }
+        public float? Z { get; private set; }
 
         public float I { get; private set; }
         public float J { get; private set; }
 
         public float? F { get; private set; }
 
-        public GARC(float x, float y, float z, float i, float J, RotateDirection dir, float? f = null)
+        public GARC(float x, float y, float? z, float i, float J, RotateDirection dir, float? f = null)
         {
             this.X = x;
             this.Y = y;
@@ -47,10 +47,10 @@ namespace GCodeGeneratorNet.Core.GCodes
             this.RotateDirection = dir;
         }
 
-        Angle XYAngle(Vector3 v1)
+        Angle XYAngle(Vector2 v1)
         {
-            var dot = Vector3.Dot(v1, new Vector3(0, 1, 0));
-            var angle = Vector3.CalculateAngle(v1, new Vector3(1, 0, 0));
+            var dot = Vector2.Dot(v1, new Vector2(0, 1));
+            var angle = Vector3.CalculateAngle(new Vector3(v1.X, v1.Y, 0), new Vector3(1, 0, 0));
             if (dot > 0)
                 return angle;
             else
@@ -59,20 +59,20 @@ namespace GCodeGeneratorNet.Core.GCodes
 
         public IEnumerable<OpenTK.Vector3> GetPoints(OpenTK.Vector3 initPos, bool absolute)
         {
-            Vector3 finish;
+            Vector2 finish;
             if (absolute)
             {
-                finish = new Vector3(X, Y, Z);
+                finish = new Vector2(X, Y);
             }
             else
             {
-                finish = new Vector3(X + initPos.X, Y + initPos.Y, Z + initPos.Z);
+                finish = new Vector2(X + initPos.X, Y + initPos.Y);
             }
 
-            Vector3 ij = new Vector3(I, J, 0);
-            Vector3 center = initPos + new Vector3(I, J, 0);
+            Vector2 ij = new Vector2(I, J);
+            Vector2 center = initPos.Xy + new Vector2(I, J);
             var radius = ij.Length;
-            var startAngle = XYAngle(initPos);
+            var startAngle = XYAngle(initPos.Xy);
             var stopAngle = XYAngle(finish);
             var dir = (int)RotateDirection;
             var distance = Math.Abs(startAngle - stopAngle);
@@ -84,10 +84,9 @@ namespace GCodeGeneratorNet.Core.GCodes
             for (double a = 0; a <= distance; a += step )
             {
                 Angle angle = startAngle + a * dir;
-                System.Diagnostics.Debug.WriteLine(center + new Vector3((float)Math.Cos(angle), (float)Math.Sin(angle), 0) * radius);
-                yield return center + new Vector3((float)Math.Cos(angle), (float)Math.Sin(angle), 0) * radius;
+                yield return new Vector3(center.X, center.Y, initPos.Z) + new Vector3((float)Math.Cos(angle), (float)Math.Sin(angle), 0) * radius;
             }
-            yield return finish;
+            yield return new Vector3(finish.X, finish.Y, initPos.Z);
         }
     }
 }

@@ -56,6 +56,7 @@ namespace GCodeGeneratorNet
                     pathView.Run(60.0, 0.0);
                     pathView = null;
                 });
+                CompileAndView();
             }
         }
 

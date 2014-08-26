@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenTK;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,14 @@ namespace GCodeGeneratorNet.Core.Misc
         public Angle(double _angle)
         {
             angle = _angle;
+        }
+
+        public Vector2 HorizontalVector
+        {
+            get
+            {
+                return new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle));
+            }
         }
 
         public void Increment(double inc)
