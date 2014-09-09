@@ -89,5 +89,10 @@ namespace GCodeGeneratorNet.Core.GCodes
             }
             yield return new Vector3(finish.X, finish.Y, initPos.Z);
         }
+
+        public override string ToString()
+        {
+            return GCodeStringBuilder.GCodeToString(this);
+        }
     }
 }

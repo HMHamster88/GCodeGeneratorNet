@@ -122,6 +122,7 @@ namespace GCodeGeneratorNet
                     {
                         sr.WriteLine(code.ToString());
                     }
+                    sr.Flush();
                 }
             }
         }
