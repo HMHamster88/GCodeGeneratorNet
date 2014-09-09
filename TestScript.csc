@@ -46,6 +46,11 @@ public static IEnumerable<IGCode> Generate()
     }
     
     gcg.RoundHole(new Vector2(shotButtonDistance, 0), shotButtonHoleRadius, gcg.MaterialHeight, 0);
+    gcg.Pause();
+    var m = new Matrix();
+    m.Translate(shotButtonDistance, 0);
+    m.Rotate(-90);
+    gcg.Text("XII", FontFamily.GenericSansSerif, 0, 40, m, gcg.MaterialHeight - 1, 0.01f, true);
     return gcg.Codes;
 }
 

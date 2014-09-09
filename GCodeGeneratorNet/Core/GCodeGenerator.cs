@@ -60,6 +60,12 @@ namespace GCodeGeneratorNet.Core
             GoToSafetyHeight();
         }
 
+        public void Pause()
+        {
+            GoToSafetyHeight();
+            codes.Add(new Pause());
+        }
+
         public void GoToSafetyHeight()
         {
             codes.Add(new GMOVE(true, null, null, MaterialHeight + SafetyHeight));

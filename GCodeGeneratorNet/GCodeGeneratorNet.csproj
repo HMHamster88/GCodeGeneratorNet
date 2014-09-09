@@ -91,6 +91,7 @@
     <Compile Include="Core\GCodes\GARC.cs" />
     <Compile Include="Core\GCodes\G90.cs" />
     <Compile Include="Core\GCodes\IGCode.cs" />
+    <Compile Include="Core\GCodes\Pause.cs" />
     <Compile Include="Core\Misc\Angle.cs" />
     <Compile Include="Core\Misc\RotateDirection.cs" />
     <Compile Include="Core\TextEditManager.cs" />
