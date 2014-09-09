@@ -22,7 +22,6 @@ namespace GCodeGeneratorNet.Core
                 float? val = (float?)prop.GetValue(gcode);
                 sb.Append(val.Value.ToString("F4"));
             }
-            sb.Append("\n");
             return sb.ToString();
         }
     }
