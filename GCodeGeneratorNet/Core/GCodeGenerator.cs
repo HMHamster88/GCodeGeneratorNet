@@ -175,12 +175,18 @@ namespace GCodeGeneratorNet.Core
                     HorizontalFeedTo(v);
                 }
             }
+            HorizontalFeedTo(lastPos);
         }
 
-        public void Text(string text, FontFamily fontFamily, int style, float size, Matrix matrix, float z, float flatness)
+        public void Text(string text, FontFamily fontFamily, int style, float size, Matrix matrix, float z, float flatness, bool centerd = true)
         {
             GraphicsPath gp = new GraphicsPath();
             gp.AddString(text, fontFamily, style, size, new Point(), StringFormat.GenericDefault);
+            var m = new Matrix();
+            var bounds = gp.GetBounds();
+            if(centerd)
+                m.Translate(-(bounds.X + bounds.Width / 2), -(bounds.Y + gp.GetBounds().Height / 2));
+            gp.Transform(m);
             Path(gp, matrix, flatness, z);
         }
 
