@@ -88,11 +88,13 @@ namespace GCodeGeneratorNet
                 if (dialog.ShowDialog() == true)
                 {
                     workspace.TextEditManager.Save(dialog.FileName);
+                    ExportGCode(dialog.FileName + ".cnc");
                 }
             }
             else
             {
                 workspace.TextEditManager.Save(workspace.TextEditManager.FilePath);
+                ExportGCode(workspace.TextEditManager.FilePath + ".cnc");
             }
             CompileAndView();
         }
@@ -114,16 +116,22 @@ namespace GCodeGeneratorNet
             dialog.Filter = "GCode (*.nc)|*.nc";
             if (dialog.ShowDialog() == true)
             {
-                var gcodes = workspace.Compiler.Compile(workspace.TextEditManager.Text);
-                using(var file = dialog.OpenFile())
+                var fileName = dialog.FileName;
+                ExportGCode(fileName);
+            }
+        }
+
+        private void ExportGCode(string fileName)
+        {
+            var gcodes = workspace.Compiler.Compile(workspace.TextEditManager.Text);
+            using (var file = File.OpenWrite(fileName))
+            {
+                var sr = new StreamWriter(file);
+                foreach (var code in gcodes)
                 {
-                    var sr = new StreamWriter(file);
-                    foreach(var code in gcodes)
-                    {
-                        sr.WriteLine(code.ToString());
-                    }
-                    sr.Flush();
+                    sr.WriteLine(code.ToString());
                 }
+                sr.Flush();
             }
         }
     }
