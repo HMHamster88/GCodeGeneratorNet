@@ -87,6 +87,7 @@
     <Compile Include="Core\CsToGCodeCompiler.cs" />
     <Compile Include="Core\GCodeGenerator.cs" />
     <Compile Include="Core\GCodeStringBuilder.cs" />
+    <Compile Include="Core\GCodes\GComment.cs" />
     <Compile Include="Core\GCodes\GMOVE.cs" />
     <Compile Include="Core\GCodes\GARC.cs" />
     <Compile Include="Core\GCodes\G90.cs" />
