@@ -32,17 +32,33 @@ public static IEnumerable<IGCode> Generate()
     	gcg.VerticalFeedTo(z);
     	gcg.HorizontalFeedTo(startPoint);
     	gcg.HorizontalArc(center, centralHoleRadius, startAngle, sectorAngle / 2, RotateDirection.CCW, ToolCompensation.In);
-    	gcg.HorizontalFeedTo(stopPoint + stopD);
+    	
     	
     	var startPoint2 = center + startAngle.HorizontalVector * (sectorRadius + gcg.ToolRadiusAndTolerance);
     	var stopPoint2 = center + stopAngle.HorizontalVector * (sectorRadius + gcg.ToolRadiusAndTolerance);
     	
-    	gcg.HorizontalFeedTo(stopPoint2 + stopD);
+    	if(z != 0)
+    	{
+    		gcg.HorizontalFeedTo(stopPoint + stopD);
+    		gcg.HorizontalFeedTo(stopPoint2 + stopD);
+    	}
+    	else
+    	{
+    		gcg.DottedLine(stopPoint + stopD, stopPoint2 + stopD, z, 3, 0.5f, 3);
+    	}
+    	
     	gcg.HorizontalFeedTo(stopPoint2);
     	gcg.HorizontalFeedTo(startPoint2);
-    	gcg.HorizontalFeedTo(startPoint2 + startD);
     	
-    	gcg.HorizontalFeedTo(startPoint + startD);	
+    	if(z != 0)
+    	{
+    		gcg.HorizontalFeedTo(startPoint2 + startD);
+    		gcg.HorizontalFeedTo(startPoint + startD);	
+    	}
+    	else
+    	{
+    		gcg.DottedLine(startPoint2 + startD, startPoint + startD, z, 3, 0.5f, 3);
+    	}
     }
     
     gcg.RoundHole(new Vector2(shotButtonDistance, 0), shotButtonHoleRadius, gcg.MaterialHeight, 0);

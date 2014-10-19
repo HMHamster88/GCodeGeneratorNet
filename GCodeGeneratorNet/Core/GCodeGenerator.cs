@@ -72,6 +72,24 @@ namespace GCodeGeneratorNet.Core
             }
         }
 
+        public void DottedLine(Vector2 start, Vector2 end, float z, float dotLength, float dotHeight, int dotCount)
+        {
+            dotLength = dotLength + ToolRadius * 2;
+            HorizontalFeedTo(start);
+            VerticalFeedTo(z);
+            float freeStep = (end - start).Length / (dotCount + 1);
+            var direction = end - start;
+            direction.Normalize();
+            for(int i = 1; i < dotCount + 1; i++)
+            {
+                HorizontalFeedTo(start + direction * freeStep * i);
+                VerticalFeedTo(z + dotHeight);
+                HorizontalFeedTo(start + direction * (freeStep * i + dotLength));
+                VerticalFeedTo(z);
+            }
+            HorizontalFeedTo(end);
+        }
+
         public void Pause()
         {
             GoToSafetyHeight();
