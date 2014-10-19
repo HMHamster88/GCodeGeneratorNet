@@ -57,13 +57,30 @@ namespace GCodeGeneratorNet.Core
             HorizontalFeedRate = 200;
             VerticalFeedRate = 100;
             VerticalStep = 2;
+            codes.Add(new G90());
             GoToSafetyHeight();
+        }
+
+        public IEnumerable<float> VerticalRange
+        {
+            get
+            {
+                for (float z = MaterialHeight - VerticalStep; z >= 0; z -= VerticalStep)
+                {
+                    yield return z;
+                }
+            }
         }
 
         public void Pause()
         {
             GoToSafetyHeight();
             codes.Add(new Pause());
+        }
+
+        public void Comments(string comments)
+        {
+            codes.Add(new GComment(comments));
         }
 
         public void GoToSafetyHeight()
@@ -86,6 +103,22 @@ namespace GCodeGeneratorNet.Core
             codes.Add(new GMOVE(false, position.X, position.Y, null, HorizontalFeedRate));
         }
 
+        public Vector2 HorizontalArcStart(Vector2 center, float radius, Angle startAngle, Angle stopAngle, RotateDirection dir, ToolCompensation compensation)
+        {
+            radius = radius + ToolRadiusAndTolerance * (int)compensation;
+            if (startAngle == stopAngle)
+                stopAngle = stopAngle + (float)Math.PI * 2 * (int)dir;
+            return center + startAngle.HorizontalVector * radius;
+        }
+
+        public Vector2 HorizontalArcEnd(Vector2 center, float radius, Angle startAngle, Angle stopAngle, RotateDirection dir, ToolCompensation compensation)
+        {
+            radius = radius + ToolRadiusAndTolerance * (int)compensation;
+            if (startAngle == stopAngle)
+                stopAngle = stopAngle + (float)Math.PI * 2 * (int)dir;
+            return center + stopAngle.HorizontalVector * radius; 
+        }
+
         public void HorizontalArc(Vector2 center, float radius, Angle startAngle, Angle stopAngle, RotateDirection dir, ToolCompensation compensation)
         {
             radius = radius + ToolRadiusAndTolerance * (int)compensation;
@@ -101,6 +134,11 @@ namespace GCodeGeneratorNet.Core
         public void HorizontalCircle(Vector2 center, float radius, RotateDirection dir, ToolCompensation compensation)
         {
             HorizontalArc(center, radius, 0, 0, dir, compensation);
+        }
+
+        public void RoundHole(Vector2 center, float radius)
+        {
+            RoundHole(center, radius, MaterialHeight, 0);
         }
 
         public void RoundHole(Vector2 center, float radius, float start, float stop)
