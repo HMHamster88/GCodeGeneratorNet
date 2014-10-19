@@ -72,8 +72,8 @@ namespace GCodeGeneratorNet.Core.GCodes
             Vector2 ij = new Vector2(I, J);
             Vector2 center = initPos.Xy + new Vector2(I, J);
             var radius = ij.Length;
-            var startAngle = XYAngle(initPos.Xy);
-            var stopAngle = XYAngle(finish);
+            var startAngle = XYAngle(initPos.Xy - center);
+            var stopAngle = XYAngle(finish - center);
             var dir = (int)RotateDirection;
             var distance = RotateDirection == RotateDirection.CCW ? stopAngle - startAngle : startAngle - stopAngle;
             if(distance == 0)
