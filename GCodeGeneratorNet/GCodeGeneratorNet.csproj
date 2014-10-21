@@ -93,6 +93,12 @@
     <Compile Include="Core\GCodes\G90.cs" />
     <Compile Include="Core\GCodes\IGCode.cs" />
     <Compile Include="Core\GCodes\Pause.cs" />
+    <Compile Include="Core\Geometry\Arc.cs" />
+    <Compile Include="Core\Geometry\Contour.cs" />
+    <Compile Include="Core\Geometry\IContourPart.cs" />
+    <Compile Include="Core\Geometry\Part25D.cs" />
+    <Compile Include="Core\Geometry\Pocket.cs" />
+    <Compile Include="Core\Geometry\ContourPoint.cs" />
     <Compile Include="Core\Misc\Angle.cs" />
     <Compile Include="Core\Misc\RotateDirection.cs" />
     <Compile Include="Core\TextEditManager.cs" />

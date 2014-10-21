@@ -1,4 +1,5 @@
 ﻿using GCodeGeneratorNet.Core.GCodes;
+using GCodeGeneratorNet.Core.Geometry;
 using GCodeGeneratorNet.Core.Misc;
 using OpenTK;
 using System;
@@ -80,7 +81,7 @@ namespace GCodeGeneratorNet.Core
             float freeStep = (end - start).Length / (dotCount + 1);
             var direction = end - start;
             direction.Normalize();
-            for(int i = 1; i < dotCount + 1; i++)
+            for (int i = 1; i < dotCount + 1; i++)
             {
                 HorizontalFeedTo(start + direction * freeStep * i);
                 VerticalFeedTo(z + dotHeight);
@@ -121,6 +122,49 @@ namespace GCodeGeneratorNet.Core
             codes.Add(new GMOVE(false, position.X, position.Y, null, HorizontalFeedRate));
         }
 
+        public void ContourAt(Contour contour, float z)
+        {
+            RapidMoveTo(contour.Parts.First().FirstPoint);
+            VerticalFeedTo(z);
+            codes.AddRange(contour.ToGCode());
+        }
+
+        public void Part25D(Part25D part)
+        {
+            if (part.Holes != null)
+            {
+                foreach (var hole in part.Holes)
+                {
+                    GoToSafetyHeight();
+                    var holePath = hole.Inflate(-ToolRadius);
+                    foreach (var z in range(part.Thickness - VerticalStep, 0, VerticalStep))
+                    {
+                        ContourAt(holePath, z);
+                    }
+                }
+            } 
+            
+            if (part.Pockets != null)
+            {
+                foreach (var pocket in part.Pockets)
+                {
+                    GoToSafetyHeight();
+                    var pocketPath = pocket.Contour.Inflate(-ToolRadius);
+                    foreach (var z in range(part.Thickness - VerticalStep, part.Thickness - pocket.Depth, VerticalStep))
+                    {
+                        ContourAt(pocketPath, z);
+                    }
+                }
+            }
+
+            GoToSafetyHeight();
+            var contourPath = part.Contour.Inflate(ToolRadius);
+            foreach (var z in range(part.Thickness - VerticalStep, 0, VerticalStep))
+            {
+                ContourAt(contourPath, z);
+            }
+        }
+
         public Vector2 HorizontalArcStart(Vector2 center, float radius, Angle startAngle, Angle stopAngle, RotateDirection dir, ToolCompensation compensation)
         {
             radius = radius + ToolRadiusAndTolerance * (int)compensation;
@@ -134,7 +178,7 @@ namespace GCodeGeneratorNet.Core
             radius = radius + ToolRadiusAndTolerance * (int)compensation;
             if (startAngle == stopAngle)
                 stopAngle = stopAngle + (float)Math.PI * 2 * (int)dir;
-            return center + stopAngle.HorizontalVector * radius; 
+            return center + stopAngle.HorizontalVector * radius;
         }
 
         public void HorizontalArc(Vector2 center, float radius, Angle startAngle, Angle stopAngle, RotateDirection dir, ToolCompensation compensation)
@@ -243,10 +287,10 @@ namespace GCodeGeneratorNet.Core
         public void Text(string text, FontFamily fontFamily, int style, float size, Matrix matrix, float z, float flatness, bool centerd = true)
         {
             GraphicsPath gp = new GraphicsPath();
-            gp.AddString(text, fontFamily, style, size, new Point(), StringFormat.GenericDefault);
+            gp.AddString(text, fontFamily, style, size, new System.Drawing.Point(), StringFormat.GenericDefault);
             var m = new Matrix();
             var bounds = gp.GetBounds();
-            if(centerd)
+            if (centerd)
                 m.Translate(-(bounds.X + bounds.Width / 2), -(bounds.Y + gp.GetBounds().Height / 2));
             gp.Transform(m);
             Path(gp, matrix, flatness, z);

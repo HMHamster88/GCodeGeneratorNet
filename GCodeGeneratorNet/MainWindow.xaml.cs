@@ -1,5 +1,6 @@
 ﻿using CSScriptLibrary;
 using GCodeGeneratorNet.Core;
+using GCodeGeneratorNet.Core.Geometry;
 using GCodeGeneratorNet.Graphics;
 using Microsoft.Win32;
 using OpenTK;

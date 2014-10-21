@@ -126,16 +126,18 @@ namespace GCodeGeneratorNet.Graphics
             GL.Begin(PrimitiveType.Lines);
             GL.Color3(1.0f, 0, 0);
 
+            var length = 1;
+
             GL.Vertex3(0, 0, 0);
-            GL.Vertex3(30, 0, 0);
+            GL.Vertex3(length, 0, 0);
 
             GL.Color3(0.0f, 1.0f, 0);
             GL.Vertex3(0, 0, 0);
-            GL.Vertex3(0, 30, 0);
+            GL.Vertex3(0, length, 0);
 
             GL.Color3(0.0f, 0.0f, 1.0f);
             GL.Vertex3(0, 0, 0);
-            GL.Vertex3(0, 0, 30);
+            GL.Vertex3(0, 0, length);
             GL.End();
 
             if (vbo != null)

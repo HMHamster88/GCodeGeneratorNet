@@ -11,6 +11,18 @@ namespace GCodeGeneratorNet.Core.Misc
     {
         double angle = 0;
 
+        public Angle(Vector2 v)
+        {
+            var xv = new Vector2(1, 0);
+            v.Normalize();
+            var cos = Vector2.Dot(xv, v);
+            angle = Math.Acos(cos);
+            if (v.Y < 0)
+            {
+                angle = Math.PI*2 - angle;
+            }
+        }
+
         public Angle(double _angle)
         {
             angle = _angle;

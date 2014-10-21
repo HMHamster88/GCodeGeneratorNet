@@ -41,5 +41,6 @@
         <ListView Grid.Row="2" ItemsSource="{Binding Compiler.Errors}">
             
         </ListView>
+        <GridSplitter Grid.Row="2" Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Top" ></GridSplitter>
     </Grid>
 </Window>
