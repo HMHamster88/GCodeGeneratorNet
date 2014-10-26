@@ -13,13 +13,13 @@ namespace GCodeGeneratorNet.Core
 {
     public class CsToGCodeCompiler
     {
-        public IEnumerable<IGCode> Compile(string code)
+        public GScriptResult Compile(string code)
         {
             Errors.Clear();
             try
             {
                 var script = new AsmHelper(CSScript.LoadMethod(code));
-                return script.Invoke("*.Generate") as IEnumerable<IGCode>;
+                return script.Invoke("*.Generate") as GScriptResult;
             }
             catch(CompilerException  ex)
             {
@@ -29,7 +29,7 @@ namespace GCodeGeneratorNet.Core
                     errors.Add(err);
                 }
             }
-            return new IGCode[]{};
+            return null;
         }
 
         ObservableCollection<CompilerError> errors = new ObservableCollection<CompilerError>();

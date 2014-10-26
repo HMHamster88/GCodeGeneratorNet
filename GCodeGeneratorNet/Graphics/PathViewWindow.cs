@@ -18,10 +18,7 @@ namespace GCodeGeneratorNet.Graphics
         Vector3 viewPan;
         float viewScale = 1;
 
-        class Vbo { public int VboID, NumElements; }
-        Vbo vbo = null;
-
-        IEnumerable<VertexPositionColor> newPonts;
+        IEnumerable<Path3D> paths;
 
         public ViewWindow()
             : base(800, 600)
@@ -30,9 +27,16 @@ namespace GCodeGeneratorNet.Graphics
             Mouse.WheelChanged += Mouse_WheelChanged;
         }
 
-        public void LoadPoints(IEnumerable<VertexPositionColor> points)
+        public void LoadPoints(IEnumerable<Path3D> paths)
         {
-            newPonts = points;
+            if(paths != null)
+            {
+                foreach (var path in paths)
+                {
+                    path.Dispose();
+                }
+            }
+            this.paths = paths;
         }
 
         void Mouse_WheelChanged(object sender, MouseWheelEventArgs e)
@@ -103,12 +107,13 @@ namespace GCodeGeneratorNet.Graphics
         {
             base.OnRenderFrame(e);
 
-            if(newPonts != null)
+            if(paths != null)
+            foreach (var path in paths)
             {
-                if (vbo != null)
-                    GL.DeleteBuffers(1, ref vbo.VboID);
-                vbo = LoadVBO(newPonts.ToArray());
-                newPonts = null;
+                if (!path.Initalized)
+                {
+                    path.Init();
+                }
             }
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
@@ -140,50 +145,13 @@ namespace GCodeGeneratorNet.Graphics
             GL.Vertex3(0, 0, length);
             GL.End();
 
-            if (vbo != null)
-                Draw(vbo);
+            if (paths != null)
+            foreach (var path in paths)
+            {
+                path.Draw();
+            }
 
             SwapBuffers();
         }
-
-        Vbo LoadVBO<TVertex>(TVertex[] vertices) where TVertex : struct
-        {
-            Vbo handle = new Vbo();
-            int size;
-
-            GL.GenBuffers(1, out handle.VboID);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, handle.VboID);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertices.Length * BlittableValueType.StrideOf(vertices)), vertices,
-                          BufferUsageHint.StaticDraw);
-            GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out size);
-            if (vertices.Length * BlittableValueType.StrideOf(vertices) != size)
-                throw new ApplicationException("Vertex data not uploaded correctly");
-
-            handle.NumElements = vertices.Length;
-            return handle;
-        }
-
-        void Draw(Vbo handle)
-        {
-            // To draw a VBO:
-            // 1) Ensure that the VertexArray client state is enabled.
-            // 2) Bind the vertex and element buffer handles.
-            // 3) Set up the data pointers (vertex, normal, color) according to your vertex format.
-            // 4) Call DrawElements. (Note: the last parameter is an offset into the element buffer
-            //    and will usually be IntPtr.Zero).
-
-            GL.EnableClientState(ArrayCap.ColorArray);
-            GL.EnableClientState(ArrayCap.VertexArray);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, handle.VboID);
-            //GL.BindBuffer(BufferTarget.ElementArrayBuffer, handle.EboID);
-
-            VertexPositionColor[] pc = new VertexPositionColor[] { };
-            GL.VertexPointer(3, VertexPointerType.Float, BlittableValueType.StrideOf(pc), new IntPtr(0));
-            GL.ColorPointer(4, ColorPointerType.UnsignedByte, BlittableValueType.StrideOf(pc), new IntPtr(12));
-            GL.DrawArrays(PrimitiveType.LineStrip, 0, handle.NumElements);
-            //GL.DrawElements(PrimitiveType.LineLoop, handle.NumElements/2, DrawElementsType.UnsignedShort, IntPtr.Zero);
-        }
-
     }
 }

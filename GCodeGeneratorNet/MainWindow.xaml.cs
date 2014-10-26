@@ -69,10 +69,11 @@ namespace GCodeGeneratorNet
 
         private void CompileAndView()
         {
-            var gcodes = workspace.Compiler.Compile(workspace.TextEditManager.Text);
-            var points = workspace.GCodeToPointsConverter.Convert(gcodes);
-            if (pathView != null)
-                pathView.LoadPoints(points);
+            var result = workspace.Compiler.Compile(workspace.TextEditManager.Text);
+            if (pathView != null && result != null)
+            {
+                pathView.LoadPoints(result.ToPaths().ToArray());
+            }
         }
 
         private void CommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -124,15 +125,18 @@ namespace GCodeGeneratorNet
 
         private void ExportGCode(string fileName)
         {
-            var gcodes = workspace.Compiler.Compile(workspace.TextEditManager.Text);
-            using (var file = File.OpenWrite(fileName))
+            var result = workspace.Compiler.Compile(workspace.TextEditManager.Text);
+            if (result != null)
             {
-                var sr = new StreamWriter(file);
-                foreach (var code in gcodes)
+                using (var file = File.OpenWrite(fileName))
                 {
-                    sr.WriteLine(code.ToString());
+                    var sr = new StreamWriter(file);
+                    foreach (var code in result.Codes)
+                    {
+                        sr.WriteLine(code.ToString());
+                    }
+                    sr.Flush();
                 }
-                sr.Flush();
             }
         }
     }

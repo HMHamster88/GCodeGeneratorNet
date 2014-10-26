@@ -1,4 +1,6 @@
-﻿using System;
+﻿using GCodeGeneratorNet.Graphics;
+using OpenTK;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,6 +21,33 @@ namespace GCodeGeneratorNet.Core.Geometry
             this.Contour = contour;
             this.Pockets = pockets;
             this.Holes = holes;
+        }
+
+        IEnumerable<VertexPositionColor> ContourAt(Contour contour, float z)
+        {
+            return contour.DrawPoints.Select(v => new VertexPositionColor(v.X, v.Y, z, System.Drawing.Color.Red));
+        }
+
+        public IEnumerable<Path3D> ToPaths()
+        {
+            yield return new Path3D(ContourAt(Contour, 0));
+            yield return new Path3D(ContourAt(Contour, Thickness));
+            if (Holes != null)
+            {
+                foreach (var hole in Holes)
+                {
+                    yield return new Path3D(ContourAt(hole, 0));
+                    yield return new Path3D(ContourAt(hole, Thickness));
+                }
+            }
+            if (Pockets != null)
+            {
+                foreach (var pocket in Pockets)
+                {
+                    yield return new Path3D(ContourAt(pocket.Contour, Thickness - pocket.Depth));
+                    yield return new Path3D(ContourAt(pocket.Contour, Thickness));
+                }
+            }
         }
     }
 }

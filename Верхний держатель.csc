@@ -7,7 +7,7 @@ using GCodeGeneratorNet.Core.GCodes;
 using GCodeGeneratorNet.Core.Misc;
 using GCodeGeneratorNet.Core.Geometry;
 
-public static IEnumerable<IGCode> Generate()
+public static GScriptResult Generate()
 {
     GCodeGenerator gcg = new GCodeGenerator();
     float holesRadius = 2.5f;
@@ -32,6 +32,6 @@ public static IEnumerable<IGCode> Generate()
 	});
     gcg.Part25D(part);
     gcg.GoToSafetyHeight();
-    return gcg.Codes;
+    return new GScriptResult(new []{part}, gcg.Codes);
 }
 
