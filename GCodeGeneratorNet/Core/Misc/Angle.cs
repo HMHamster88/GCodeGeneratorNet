@@ -36,6 +36,11 @@ namespace GCodeGeneratorNet.Core.Misc
             }
         }
 
+        public bool EqualEps(Angle other, double eps)
+        {
+            return Math.Abs(this - other) < eps;
+        }
+
         public void Increment(double inc)
         {
             angle += inc;

@@ -42,11 +42,13 @@ namespace GCodeGeneratorNet.Core.Geometry
             OpDirected
         }
 
+        static float eps = 1e-15f;
+
         public static CornerType IsOuterCorner(Vector2 prev, Vector2 next, bool reverse)
         {
-            if (prev == next)
+            if (prev.EqualEps(next, eps))
                 return CornerType.CoDirected;
-            if (prev == -next)
+            if (prev.EqualEps(-next, eps))
                 return CornerType.OpDirected;
 
             if (reverse)

@@ -119,7 +119,7 @@ namespace GCodeGeneratorNet.Core.Geometry
 
         public IEnumerable<IContourPart> Inflate(float radius, Vector2 prev, Vector2 next)
         {
-            if((StopAngle - StartAngle) == 0)
+            if(StopAngle.EqualEps(StartAngle, 1e-15))
             {
                 yield return new Arc(Center, Radius + radius, StartAngle, StartAngle, Direction);
             }

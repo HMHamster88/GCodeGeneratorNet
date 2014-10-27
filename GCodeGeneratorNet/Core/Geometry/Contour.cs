@@ -22,6 +22,11 @@ namespace GCodeGeneratorNet.Core.Geometry
             this.Parts = parts;
         }
 
+        public Contour(params IContourPart[] parts)
+        {
+            this.Parts = parts;
+        }
+
         public Contour Inflate(float radius)
         {
             var result = new List<IContourPart>();
