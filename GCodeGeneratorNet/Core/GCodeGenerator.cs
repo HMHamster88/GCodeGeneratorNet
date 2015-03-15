@@ -75,7 +75,6 @@ namespace GCodeGeneratorNet.Core
 
         public void DottedLine(Vector2 start, Vector2 end, float z, float dotLength, float dotHeight, int dotCount)
         {
-            dotLength = dotLength + ToolRadius * 2;
             HorizontalFeedTo(start);
             VerticalFeedTo(z);
             float freeStep = (end - start).Length / (dotCount + 1);
@@ -83,9 +82,9 @@ namespace GCodeGeneratorNet.Core
             direction.Normalize();
             for (int i = 1; i < dotCount + 1; i++)
             {
-                HorizontalFeedTo(start + direction * freeStep * i);
+                HorizontalFeedTo(start + direction * (freeStep * i - dotLength / 2));
                 VerticalFeedTo(z + dotHeight);
-                HorizontalFeedTo(start + direction * (freeStep * i + dotLength));
+                HorizontalFeedTo(start + direction * (freeStep * i + dotLength / 2));
                 VerticalFeedTo(z);
             }
             HorizontalFeedTo(end);
@@ -100,6 +99,11 @@ namespace GCodeGeneratorNet.Core
         public void Comments(string comments)
         {
             codes.Add(new GComment(comments));
+        }
+
+        public void AddCode(IGCode code)
+        {
+            codes.Add(code);
         }
 
         public void GoToSafetyHeight()
@@ -120,6 +124,32 @@ namespace GCodeGeneratorNet.Core
         public void HorizontalFeedTo(Vector2 position)
         {
             codes.Add(new GMOVE(false, position.X, position.Y, null, HorizontalFeedRate));
+        }
+
+        public void ContourAt(Contour contour, float z, float bridgeWidth, float bridgeHeight, int bridgeCount)
+        {
+            bridgeWidth += ToolRadius * 2;
+            var result = new List<IGCode>();
+            var start = contour.Parts.First().FirstPoint;
+            var prev = start;
+            var end = start;
+            RapidMoveTo(start);
+            VerticalFeedTo(z);
+            foreach(var part in contour.Parts)
+            {
+                end = part.FirstPoint;
+                if ((prev - end).Length > bridgeWidth * bridgeCount)
+                {
+                    DottedLine(prev, end, z, bridgeWidth, bridgeHeight, bridgeCount);
+                }
+                prev = part.LastPoint;
+                codes.AddRange(part.ToGCode(z, bridgeWidth, bridgeHeight, bridgeCount));
+            }
+            end = start;
+            if ((prev - end).Length > bridgeWidth * bridgeCount)
+            {
+                DottedLine(prev, end, z, bridgeWidth, bridgeHeight, bridgeCount);
+            }
         }
 
         public void ContourAt(Contour contour, float z)
@@ -159,9 +189,17 @@ namespace GCodeGeneratorNet.Core
 
             GoToSafetyHeight();
             var contourPath = part.Contour.Inflate(ToolRadius);
-            foreach (var z in range(part.Thickness - VerticalStep, 0, VerticalStep))
+            var rng = range(part.Thickness - VerticalStep, 0, VerticalStep);
+            foreach (var z in rng)
             {
-                ContourAt(contourPath, z);
+                if (z == rng.Last())
+                {
+                    ContourAt(contourPath, z, 2, 1, 3);
+                }
+                else
+                {
+                    ContourAt(contourPath, z);
+                }
             }
         }
 

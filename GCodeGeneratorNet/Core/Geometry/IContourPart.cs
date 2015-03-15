@@ -15,5 +15,6 @@ namespace GCodeGeneratorNet.Core.Geometry
         Vector2 LastPoint { get; }
         IEnumerable<IContourPart> Inflate(float radius, Vector2 prev, Vector2 next);
         IEnumerable<IGCode> ToGCode();
+        IEnumerable<IGCode> ToGCode(float z, float bridgeWidth, float bridgeHeight, int bridgeCount);
     }
 }

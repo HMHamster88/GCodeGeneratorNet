@@ -5,6 +5,7 @@ using GCodeGeneratorNet.Graphics;
 using Microsoft.Win32;
 using OpenTK;
 using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -128,6 +129,10 @@ namespace GCodeGeneratorNet
             var result = workspace.Compiler.Compile(workspace.TextEditManager.Text);
             if (result != null)
             {
+                if (File.Exists(fileName))
+                {
+                    File.Delete(fileName);
+                }
                 using (var file = File.OpenWrite(fileName))
                 {
                     var sr = new StreamWriter(file);
@@ -137,6 +142,17 @@ namespace GCodeGeneratorNet
                     }
                     sr.Flush();
                 }
+            }
+        }
+
+        private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var selected = errorList.SelectedItem as CompilerError;
+            if (selected != null)
+            {
+                sourceEditor.TextArea.Caret.Line = selected.Line;
+                sourceEditor.TextArea.Caret.Column = selected.Column;
+                sourceEditor.TextArea.Caret.BringCaretToView();
             }
         }
     }

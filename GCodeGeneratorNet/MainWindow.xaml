@@ -33,12 +33,14 @@
                 <MenuItem Header="Show 3D" Click="MenuItem_Click"/>
             </MenuItem>
         </Menu>
-        <avalonEdit:TextEditor SyntaxHighlighting="C#" Grid.Row="1" FontFamily="Consolas" FontSize="10pt">
+        <avalonEdit:TextEditor x:Name="sourceEditor" SyntaxHighlighting="C#" ShowLineNumbers="True"
+                               Grid.Row="1" FontFamily="Consolas" FontSize="10pt">
             <i:Interaction.Behaviors>
                 <gui:AvalonEditBehaviour GiveMeTheText="{Binding TextEditManager.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             </i:Interaction.Behaviors>
         </avalonEdit:TextEditor>
-        <ListView Grid.Row="2" ItemsSource="{Binding Compiler.Errors}">
+        <ListView x:Name="errorList" Grid.Row="2" ItemsSource="{Binding Compiler.Errors}"
+                  SelectionChanged="ListView_SelectionChanged">
             
         </ListView>
         <GridSplitter Grid.Row="2" Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Top" ></GridSplitter>

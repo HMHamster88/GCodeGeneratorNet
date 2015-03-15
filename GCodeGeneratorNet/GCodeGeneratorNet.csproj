@@ -97,6 +97,7 @@
     <Compile Include="Core\Geometry\Contour.cs" />
     <Compile Include="Core\Geometry\IContourPart.cs" />
     <Compile Include="Core\Geometry\Part25D.cs" />
+    <Compile Include="Core\Geometry\PartBuilder.cs" />
     <Compile Include="Core\Geometry\Pocket.cs" />
     <Compile Include="Core\Geometry\ContourPoint.cs" />
     <Compile Include="Core\Geometry\Vector2Extensions.cs" />

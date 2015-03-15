@@ -16,5 +16,11 @@ namespace GCodeGeneratorNet.Core.Geometry
             this.Depth = depth;
             this.Contour = contour;
         }
+
+        public Pocket(float depth, params IContourPart[] parts)
+        {
+            this.Depth = depth;
+            this.Contour = new Contour(parts);
+        }
     }
 }

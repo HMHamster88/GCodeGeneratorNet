@@ -15,6 +15,15 @@ namespace GCodeGeneratorNet.Core.Geometry
     }
     public class Contour
     {
+        public static Contour Rectangle(Vector2 position, Vector2 size)
+        {
+            return new Contour(
+                new ContourPoint(position),
+                new ContourPoint(position + new Vector2(size.X, 0)),
+                new ContourPoint(position + size),
+                new ContourPoint(position + new Vector2(0, size.Y))
+                );
+        }
         public IEnumerable<IContourPart> Parts { get; private set; }
 
         public Contour(IEnumerable<IContourPart> parts)
@@ -71,6 +80,20 @@ namespace GCodeGeneratorNet.Core.Geometry
             {
                 new GMOVE(false, start.X, start.Y, null)
             });
+        }
+
+        public IEnumerable<IGCode> ToGCode(float z, float bridgeWidth, float bridgeHeight, int bridgeCount)
+        {
+            var result = new List<IGCode>();
+            var prev = Parts.Last().LastPoint;
+            var start = Parts.First().FirstPoint;
+            result.Add(new GMOVE(false, start.X, start.Y, null));
+            result.Add(new GMOVE(false, null, null, z));
+            foreach (var part in Parts)
+            {
+                result.AddRange(part.ToGCode(z, bridgeWidth, bridgeHeight, bridgeCount));
+            }
+            return result;
         }
     }
 }
