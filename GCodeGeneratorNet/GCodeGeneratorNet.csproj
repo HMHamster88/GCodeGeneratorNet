@@ -100,9 +100,12 @@
     <Compile Include="Core\Geometry\PartBuilder.cs" />
     <Compile Include="Core\Geometry\Pocket.cs" />
     <Compile Include="Core\Geometry\ContourPoint.cs" />
+    <Compile Include="Core\Geometry\Trangle3D.cs" />
     <Compile Include="Core\Geometry\Vector2Extensions.cs" />
     <Compile Include="Core\GScriptResult.cs" />
     <Compile Include="Core\Misc\Angle.cs" />
+    <Compile Include="Core\Misc\StreamExtension.cs" />
+    <Compile Include="Core\STLWriter.cs" />
     <Compile Include="Graphics\Path3D.cs" />
     <Compile Include="Core\Misc\RotateDirection.cs" />
     <Compile Include="Core\TextEditManager.cs" />

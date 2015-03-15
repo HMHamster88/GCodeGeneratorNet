@@ -49,5 +49,26 @@ namespace GCodeGeneratorNet.Core.Geometry
                 }
             }
         }
+
+        public IEnumerable<Trangle3D> ToTrangles()
+        {
+            var result = new List<Trangle3D>();
+            result.AddRange(Trangle3D.VerticalContour(Contour.DrawPoints, 0, Thickness));
+            if (Holes != null)
+            {
+                foreach (var hole in Holes)
+                {
+                    result.AddRange(Trangle3D.VerticalContour(hole.DrawPoints, 0, Thickness));
+                }
+            }
+            if (Pockets != null)
+            {
+                foreach (var pocket in Pockets)
+                {
+                    result.AddRange(Trangle3D.VerticalContour(pocket.Contour.DrawPoints, Thickness - pocket.Depth, Thickness));
+                }
+            }
+            return result;
+        }
     }
 }

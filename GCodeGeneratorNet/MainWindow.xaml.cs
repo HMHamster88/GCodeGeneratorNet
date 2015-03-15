@@ -155,5 +155,29 @@ namespace GCodeGeneratorNet
                 sourceEditor.TextArea.Caret.BringCaretToView();
             }
         }
+
+        private void MenuItem_Click_3(object sender, RoutedEventArgs e)
+        {
+            var dialog = new SaveFileDialog();
+            dialog.Filter = "STL (*.stl)|*.stl";
+            if (dialog.ShowDialog() == true)
+            {
+                var result = workspace.Compiler.Compile(workspace.TextEditManager.Text);
+                if (result != null)
+                {
+                    using (Stream f = dialog.OpenFile())
+                    {
+                        var trangles = new List<Trangle3D>();
+
+                        foreach (var part in result.Parts)
+                        {
+                            trangles.AddRange(part.ToTrangles());
+                        }
+
+                        STLWriter.WriteSTL(f, trangles);
+                    }
+                }
+            }
+        }
     }
 }
