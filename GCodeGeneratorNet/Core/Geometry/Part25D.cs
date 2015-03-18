@@ -30,8 +30,11 @@ namespace GCodeGeneratorNet.Core.Geometry
 
         public IEnumerable<Path3D> ToPaths()
         {
-            yield return new Path3D(ContourAt(Contour, 0));
-            yield return new Path3D(ContourAt(Contour, Thickness));
+            if (Contour.Parts.Count() > 0)
+            {
+                yield return new Path3D(ContourAt(Contour, 0));
+                yield return new Path3D(ContourAt(Contour, Thickness));
+            }
             if (Holes != null)
             {
                 foreach (var hole in Holes)

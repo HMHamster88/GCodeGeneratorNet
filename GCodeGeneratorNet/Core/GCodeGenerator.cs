@@ -200,6 +200,10 @@ namespace GCodeGeneratorNet.Core
 
             GoToSafetyHeight();
             var contourPath = part.Contour.Inflate(ToolRadius);
+            if(contourPath.Parts.Count() == 0)
+            {
+                return;
+            }
             var rng = range(part.Thickness - VerticalStep, 0, VerticalStep);
             foreach (var z in rng)
             {
@@ -357,6 +361,11 @@ namespace GCodeGeneratorNet.Core
             }
             if (last != stop)
                 yield return stop;
+        }
+
+        public static void Debug(object obj)
+        {
+            System.Diagnostics.Debug.WriteLine(obj);
         }
     }
 }
