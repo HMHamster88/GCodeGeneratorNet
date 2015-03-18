@@ -4,7 +4,7 @@
         xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:gui="clr-namespace:GCodeGeneratorNet.Gui"
-        Title="MainWindow" Height="350" Width="525" >
+        Title="{Binding TextEditManager.FilePath, StringFormat='GCGN - {0}'}" Height="350" Width="525" >
     <Window.CommandBindings>
         <CommandBinding Command="New" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="Save" Executed="CommandBinding_Executed_1"/>

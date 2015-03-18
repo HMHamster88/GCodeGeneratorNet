@@ -25,6 +25,7 @@ namespace GCodeGeneratorNet.Graphics
         {
             Mouse.Move += Mouse_Move;
             Mouse.WheelChanged += Mouse_WheelChanged;
+            this.Title = "3D View";
         }
 
         public void LoadPoints(IEnumerable<Path3D> paths)
