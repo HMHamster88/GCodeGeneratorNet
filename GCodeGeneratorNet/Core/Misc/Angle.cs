@@ -105,5 +105,24 @@ namespace GCodeGeneratorNet.Core.Misc
                 return true;
             return false;
         }
+
+        public static IEnumerable<Angle> Angles(int count, double startAngle = 0, double stopAngle = 0)
+        {
+            double delta;
+            if(startAngle == stopAngle)
+            {
+                delta = Math.PI * 2 / count;
+            }
+            else
+            {
+                delta = (stopAngle - startAngle) / count;
+            }
+            Angle a = startAngle;
+            for(int i = 0; i < count; i++)
+            {
+                yield return a;
+                a += delta;
+            }
+        }
     }
 }

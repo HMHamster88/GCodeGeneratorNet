@@ -15,6 +15,21 @@ namespace GCodeGeneratorNet.Core.Geometry
         List<Contour> holes = new List<Contour>();
         List<Pocket> pockets = new List<Pocket>();
 
+        public void SetContour(Contour contour)
+        {
+            this.contour = contour;
+        }
+
+        public void AddHole(Contour hole)
+        {
+            holes.Add(hole);
+        }
+
+        public void AddPocket(Pocket pocket)
+        {
+            pockets.Add(pocket);
+        }
+
         public void Add(IContourPart part)
         {
             contourParts.Add(part);
@@ -30,10 +45,24 @@ namespace GCodeGeneratorNet.Core.Geometry
             Add(new Arc(center, radius, startAngle, stopAngle, direction));
         }
 
-        public void CreateContour()
+        public void AddCircle(Vector2 center, float radius)
+        {
+            AddArc(center, radius, 0, 0, RotateDirection.CW);
+        }
+
+        public void AddRect(Vector2 position, Vector2 size)
+        {
+            AddPoint(position);
+            AddPoint(position + new Vector2(size.X, 0));
+            AddPoint(position + size);
+            AddPoint(position + new Vector2(0, size.Y));
+        }
+
+        public Contour CreateContour()
         {
             contour = new Contour(contourParts);
             contourParts = new List<IContourPart>();
+            return contour;
         }
 
         public void CreateHole()
