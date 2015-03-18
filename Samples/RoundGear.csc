@@ -27,17 +27,21 @@ public static GScriptResult Generate()
     GCodeGenerator gcg = new GCodeGenerator();
     gcg.SafetyHeight = 4;
     gcg.MaterialHeight = 4;
+    gcg.HorizontalFeedRate = 200;
+    gcg.VerticalStep = 1;
     var parts = new List<Part25D>();
     
     PartBuilder pb = new PartBuilder();
-    pb.SetContour(Gear(new Vector2(), 4, 34));
+    pb.SetContour(Gear(new Vector2(), 3, 8));
     
-    foreach(Angle angle in Angle.Angles(6))
+    /*foreach(Angle angle in Angle.Angles(6))
 	{
-		pb.AddCircle(angle.HorizontalVector * 55, 25);
+		pb.AddCircle(angle.HorizontalVector * 27, 10);
 		pb.CreateHole();		
-	}
+	}*/
 
+	pb.AddCircle(new Vector2(), 2);
+	pb.CreateHole();
     parts.Add(pb.CreatePart(4));
 
 

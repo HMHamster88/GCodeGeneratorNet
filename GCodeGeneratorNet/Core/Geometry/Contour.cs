@@ -73,16 +73,16 @@ namespace GCodeGeneratorNet.Core.Geometry
             }
         }
 
-        public IEnumerable<IGCode> ToGCode()
+        public IEnumerable<IGCode> ToGCode(float f)
         {
             var start = Parts.First().FirstPoint;
-            return Parts.SelectMany(p => p.ToGCode()).Concat(new IGCode[]
+            return Parts.SelectMany(p => p.ToGCode(f)).Concat(new IGCode[]
             {
                 new GMOVE(false, start.X, start.Y, null)
             });
         }
 
-        public IEnumerable<IGCode> ToGCode(float z, float bridgeWidth, float bridgeHeight, int bridgeCount)
+        public IEnumerable<IGCode> ToGCode(float z, float bridgeWidth, float bridgeHeight, int bridgeCount, float f)
         {
             var result = new List<IGCode>();
             var prev = Parts.Last().LastPoint;
@@ -91,7 +91,7 @@ namespace GCodeGeneratorNet.Core.Geometry
             result.Add(new GMOVE(false, null, null, z));
             foreach (var part in Parts)
             {
-                result.AddRange(part.ToGCode(z, bridgeWidth, bridgeHeight, bridgeCount));
+                result.AddRange(part.ToGCode(z, bridgeWidth, bridgeHeight, bridgeCount, f));
             }
             return result;
         }

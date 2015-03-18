@@ -213,25 +213,25 @@ namespace GCodeGeneratorNet.Core.Geometry
             }
         }
 
-        public IEnumerable<GCodes.IGCode> ToGCode()
+        public IEnumerable<GCodes.IGCode> ToGCode(float f)
         {
             Vector2 start = Center + StartAngle.HorizontalVector * Radius;
             Vector2 startOffset = Center - start;
             Vector2 end = Center + StopAngle.HorizontalVector * Radius;
-            yield return new GMOVE(false, start.X, start.Y, null);
-            yield return new GARC(end.X, end.Y, null, startOffset.X, startOffset.Y, Direction);
+            yield return new GMOVE(false, start.X, start.Y, null, f);
+            yield return new GARC(end.X, end.Y, null, startOffset.X, startOffset.Y, Direction, f);
         }
 
-        public IEnumerable<GCodes.IGCode> ArcPartToGCode(Angle startAngle, Angle stopAngle, float z)
+        public IEnumerable<GCodes.IGCode> ArcPartToGCode(Angle startAngle, Angle stopAngle, float z, float f)
         {
             Vector2 start = Center + startAngle.HorizontalVector * Radius;
             Vector2 startOffset = Center - start;
             Vector2 end = Center + stopAngle.HorizontalVector * Radius;
-            yield return new GMOVE(false, start.X, start.Y, z);
-            yield return new GARC(end.X, end.Y, null, startOffset.X, startOffset.Y, Direction);
+            yield return new GMOVE(false, start.X, start.Y, z, f);
+            yield return new GARC(end.X, end.Y, null, startOffset.X, startOffset.Y, Direction, f);
         }
 
-        public IEnumerable<IGCode> ToGCode(float z, float bridgeWidth, float bridgeHeight, int bridgeCount)
+        public IEnumerable<IGCode> ToGCode(float z, float bridgeWidth, float bridgeHeight, int bridgeCount, float f)
         {
             var list = new List<IGCode>();
             var dir = (int)Direction;
@@ -244,7 +244,7 @@ namespace GCodeGeneratorNet.Core.Geometry
 
             if(length < (bridgeWidth ) * bridgeCount)
             {
-                return ToGCode();
+                return ToGCode(f);
             }
             
             var delta = distance / (bridgeCount + 1);
@@ -261,10 +261,10 @@ namespace GCodeGeneratorNet.Core.Geometry
                 {
                     endAngle -= al * dir;
                 }
-                list.AddRange(ArcPartToGCode(beginAngle, endAngle, z));
+                list.AddRange(ArcPartToGCode(beginAngle, endAngle, z, f));
                 if (i != bridgeCount)
                 {
-                    list.AddRange(ArcPartToGCode(endAngle, endAngle + al * 2 * dir, z + bridgeHeight));
+                    list.AddRange(ArcPartToGCode(endAngle, endAngle + al * 2 * dir, z + bridgeHeight, f));
                 }
             }
 

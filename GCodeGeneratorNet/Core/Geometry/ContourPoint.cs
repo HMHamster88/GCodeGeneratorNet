@@ -93,16 +93,16 @@ namespace GCodeGeneratorNet.Core.Geometry
         }
 
 
-        public IEnumerable<GCodes.IGCode> ToGCode()
+        public IEnumerable<GCodes.IGCode> ToGCode(float f)
         {
-            yield return new GMOVE(false, Position.X, Position.Y, null);
+            yield return new GMOVE(false, Position.X, Position.Y, null,f);
         }
 
 
-        public IEnumerable<IGCode> ToGCode(float z, float bridgeWidth, float bridgeHeight, int bridgeCount)
+        public IEnumerable<IGCode> ToGCode(float z, float bridgeWidth, float bridgeHeight, int bridgeCount, float f)
         {
 
-            yield return new GMOVE(false, Position.X, Position.Y, null);
+            yield return new GMOVE(false, Position.X, Position.Y, null, f);
         }
     }
 }

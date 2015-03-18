@@ -154,7 +154,7 @@ namespace GCodeGeneratorNet.Core
                     DottedLine(prev, end, z, bridgeWidth, bridgeHeight, bridgeCount);
                 }
                 prev = part.LastPoint;
-                codes.AddRange(part.ToGCode(z, bridgeWidth, bridgeHeight, bridgeCount));
+                codes.AddRange(part.ToGCode(z, bridgeWidth, bridgeHeight, bridgeCount, HorizontalFeedRate));
             }
             end = start;
             if ((prev - end).Length > bridgeWidth * bridgeCount)
@@ -167,7 +167,7 @@ namespace GCodeGeneratorNet.Core
         {
             RapidMoveTo(contour.Parts.First().FirstPoint);
             VerticalFeedTo(z);
-            codes.AddRange(contour.ToGCode());
+            codes.AddRange(contour.ToGCode(HorizontalFeedRate));
         }
 
         public void Part25D(Part25D part)
