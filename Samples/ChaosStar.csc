@@ -19,9 +19,8 @@ public static Part25D ChaosStar()
 {
 	var pb = new PartBuilder();
 	var a1 = Math.Asin(arrowBaseWidth / r1);
-	for(int i = 0; i < 8; i++)
+	foreach(Angle angle in Angle.Angles(8))
     {
-    	var angle = new Angle(Math.PI * 2 * i / 8.0f);
     	var mainVector = angle.HorizontalVector * radius;
     	var mp = mainVector.PerpendicularRight;
     	var arrowBase = mainVector * (1 - arrowHeight);
@@ -36,9 +35,8 @@ public static Part25D ChaosStar()
     }
     pb.CreateContour();
     float r3 = arrowBaseWidth / (float)Math.Sin(Math.PI / 8);
-    for(int i = 0; i < 8; i++)
+    foreach(Angle angle in Angle.Angles(8))
     {
-    	var angle = new Angle(Math.PI * 2 * i / 8.0f);
     	pb.AddArc(new Vector2(), radius * r2, 
     		angle - Math.PI / 4 + a1, angle - a1, RotateDirection.CCW);
     	var a2 = angle - Math.PI / 8;
