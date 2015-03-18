@@ -241,6 +241,11 @@ namespace GCodeGeneratorNet.Core.Geometry
                 distance = Math.PI * 2;
             }
             var length = distance * Radius;
+
+            if(length < (bridgeWidth ) * bridgeCount)
+            {
+                return ToGCode();
+            }
             
             var delta = distance / (bridgeCount + 1);
             var al = bridgeWidth / (Radius * 2);

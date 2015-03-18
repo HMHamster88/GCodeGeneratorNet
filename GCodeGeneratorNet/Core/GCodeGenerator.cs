@@ -47,6 +47,10 @@ namespace GCodeGeneratorNet.Core
 
         public float VerticalStep { get; set; }
 
+        public float BridgeWidth { get; set; }
+        public float BridgeHeidht { get; set; }
+        public int BridgeCount { get; set; }
+
         public GCodeGenerator()
         {
             MaterialHeight = 8;
@@ -60,6 +64,9 @@ namespace GCodeGeneratorNet.Core
             VerticalStep = 2;
             codes.Add(new G90());
             GoToSafetyHeight();
+            BridgeWidth = 2;
+            BridgeHeidht = 0.5f;
+            BridgeCount = 1;
         }
 
         public IEnumerable<float> VerticalRange
@@ -128,6 +135,10 @@ namespace GCodeGeneratorNet.Core
 
         public void ContourAt(Contour contour, float z, float bridgeWidth, float bridgeHeight, int bridgeCount)
         {
+            if(bridgeCount == 0)
+            {
+                ContourAt(contour, z);
+            }
             bridgeWidth += ToolRadius * 2;
             var result = new List<IGCode>();
             var start = contour.Parts.First().FirstPoint;
@@ -194,7 +205,7 @@ namespace GCodeGeneratorNet.Core
             {
                 if (z == rng.Last())
                 {
-                    ContourAt(contourPath, z, 2, 1, 3);
+                    ContourAt(contourPath, z, BridgeWidth, BridgeHeidht, BridgeCount);
                 }
                 else
                 {
