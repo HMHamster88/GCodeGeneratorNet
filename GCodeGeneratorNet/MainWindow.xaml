@@ -4,7 +4,7 @@
         xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:gui="clr-namespace:GCodeGeneratorNet.Gui"
-        Title="{Binding TextEditManager.FilePath, StringFormat='GCGN - {0}'}" Height="350" Width="525" >
+        Title="{Binding TextEditManager.FilePath, StringFormat='GCGN - {0}'}" Height="700" Width="600" >
     <Window.CommandBindings>
         <CommandBinding Command="New" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="Save" Executed="CommandBinding_Executed_1"/>
@@ -19,7 +19,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition/>
-            <RowDefinition/>
+            <RowDefinition Height="0.3*"/>
         </Grid.RowDefinitions>
         <Menu Grid.ColumnSpan="2">
             <MenuItem Header="File">
@@ -40,10 +40,16 @@
                 <gui:AvalonEditBehaviour GiveMeTheText="{Binding TextEditManager.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             </i:Interaction.Behaviors>
         </avalonEdit:TextEditor>
-        <ListView x:Name="errorList" Grid.Row="2" ItemsSource="{Binding Compiler.Errors}"
-                  SelectionChanged="ListView_SelectionChanged">
-            
-        </ListView>
+        <TabControl Grid.Row="2" >
+            <TabItem Header="Errors">
+                <ListView x:Name="errorList" Grid.Row="2" ItemsSource="{Binding Compiler.Errors}"
+                  SelectionChanged="ListView_SelectionChanged"/>
+            </TabItem>
+            <TabItem Header="Output">
+                <TextBox x:Name="debugView" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"/>
+            </TabItem>
+        </TabControl>
         <GridSplitter Grid.Row="2" Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Top" ></GridSplitter>
+        
     </Grid>
 </Window>

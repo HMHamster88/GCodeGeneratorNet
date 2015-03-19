@@ -1,6 +1,7 @@
 ﻿using CSScriptLibrary;
 using GCodeGeneratorNet.Core;
 using GCodeGeneratorNet.Core.Geometry;
+using GCodeGeneratorNet.Core.Misc;
 using GCodeGeneratorNet.Graphics;
 using Microsoft.Win32;
 using OpenTK;
@@ -37,6 +38,20 @@ namespace GCodeGeneratorNet
             workspace = new Workspace();
             ShowPathView();
             this.Closing += MainWindow_Closing;
+            GDebug.WriteEvent += GDebug_debugEvent;
+            GDebug.ClearEvent += GDebug_ClearEvent;
+        }
+
+        void GDebug_ClearEvent(object sender, EventArgs e)
+        {
+            debugView.Clear();
+        }
+
+        void GDebug_debugEvent(object sender, DebugEventHandlerArgs e)
+        {
+            debugView.AppendText(e.Message);
+            debugView.CaretIndex = debugView.Text.Length;
+            debugView.ScrollToEnd();
         }
 
         void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)

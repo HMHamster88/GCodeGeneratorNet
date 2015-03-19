@@ -362,10 +362,5 @@ namespace GCodeGeneratorNet.Core
             if (last != stop)
                 yield return stop;
         }
-
-        public static void Debug(object obj)
-        {
-            System.Diagnostics.Debug.WriteLine(obj);
-        }
     }
 }

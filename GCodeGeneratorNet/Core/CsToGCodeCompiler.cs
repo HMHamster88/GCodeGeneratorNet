@@ -1,6 +1,7 @@
 ﻿using csscript;
 using CSScriptLibrary;
 using GCodeGeneratorNet.Core.GCodes;
+using GCodeGeneratorNet.Core.Misc;
 using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
@@ -18,6 +19,7 @@ namespace GCodeGeneratorNet.Core
             Errors.Clear();
             try
             {
+                GDebug.Clear();
                 var script = new AsmHelper(CSScript.LoadMethod(code));
                 return script.Invoke("*.Generate") as GScriptResult;
             }
