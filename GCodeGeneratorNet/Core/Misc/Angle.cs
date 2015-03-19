@@ -124,5 +124,10 @@ namespace GCodeGeneratorNet.Core.Misc
                 a += delta;
             }
         }
+
+        public static Angle Degrees(double degrees)
+        {
+            return (degrees / 180.0) * Math.PI;
+        }
     }
 }
