@@ -38,6 +38,10 @@ namespace GCodeGeneratorNet.Core.Geometry
 
         public Contour Inflate(float radius)
         {
+            if(radius == 0)
+            {
+                return this;
+            }
             var result = new List<IContourPart>();
             for (int i = 0; i < Parts.Count(); i++)
             {

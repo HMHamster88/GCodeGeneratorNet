@@ -207,7 +207,7 @@ namespace GCodeGeneratorNet.Core
             var rng = range(part.Thickness - VerticalStep, 0, VerticalStep);
             foreach (var z in rng)
             {
-                if (z == rng.Last())
+                if (z == rng.Last() && BridgeCount != 0)
                 {
                     ContourAt(contourPath, z, BridgeWidth, BridgeHeidht, BridgeCount);
                 }
@@ -351,16 +351,23 @@ namespace GCodeGeneratorNet.Core
 
         public static IEnumerable<float> range(float start, float stop, float step)
         {
-            float last = start;
-            if ((start > stop && step > 0) || (stop < start && step < 0))
-                step = -step;
-            while ((step > 0 && start <= stop) || (step < 0 && start >= stop))
+            if (start == stop)
             {
-                yield return last = start;
-                start += step;
+                yield return start;
             }
-            if (last != stop)
-                yield return stop;
+            else
+            {
+                float last = start;
+                if ((start > stop && step > 0) || (stop < start && step < 0))
+                    step = -step;
+                while ((step > 0 && start <= stop) || (step < 0 && start >= stop))
+                {
+                    yield return last = start;
+                    start += step;
+                }
+                if (last != stop)
+                    yield return stop;
+            }
         }
     }
 }
