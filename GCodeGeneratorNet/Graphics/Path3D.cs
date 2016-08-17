@@ -63,7 +63,7 @@ namespace GCodeGeneratorNet.Graphics
             VertexPositionColor[] pc = new VertexPositionColor[] { };
             GL.VertexPointer(3, VertexPointerType.Float, BlittableValueType.StrideOf(pc), new IntPtr(0));
             GL.ColorPointer(4, ColorPointerType.UnsignedByte, BlittableValueType.StrideOf(pc), new IntPtr(12));
-            GL.DrawArrays(PrimitiveType.LineStrip, 0, vbo.NumElements);
+            GL.DrawArrays(BeginMode.LineStrip, 0, vbo.NumElements);
         }
 
         public void Dispose()

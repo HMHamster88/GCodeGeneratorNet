@@ -157,3 +157,5 @@ $RECYCLE.BIN/
 
 # cnc out files
 *.cnc
+
+packages/

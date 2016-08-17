@@ -129,7 +129,7 @@ namespace GCodeGeneratorNet.Graphics
             GL.Rotate(viewRotation.Y, Vector3d.UnitX);
             GL.Rotate(viewRotation.X, Vector3d.UnitZ);
 
-            GL.Begin(PrimitiveType.Lines);
+            GL.Begin(BeginMode.Lines);
             GL.Color3(1.0f, 0, 0);
 
             var length = 1;
