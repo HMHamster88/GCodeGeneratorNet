@@ -8,7 +8,7 @@ using GCodeGeneratorNet.Core.GCodes;
 using GCodeGeneratorNet.Core.Misc;
 
 static float materialHeight = 1.5f;
-static float radius = 28;
+static float radius = 20;
 static float arrowHeight = 0.3f;
 static float arrowWidth = 0.15f;
 static float arrowBaseWidth = 0.05f;
@@ -49,10 +49,12 @@ public static Part25D ChaosStar()
 public static GScriptResult Generate()
 {
     GCodeGenerator gcg = new GCodeGenerator();
-    gcg.ToolRadius = 3.175f / 2;
-    gcg.SafetyHeight = 4;
-    gcg.VerticalStep = 0.2f;
-    gcg.MaterialHeight = materialHeight;
+    gcg.HorizontalFeedRate = 500;
+    gcg.ToolRadius = 0.01f;
+    gcg.SafetyHeight = 2;
+    gcg.VerticalStep = 1;
+    gcg.MaterialHeight = 1;
+    gcg.BridgeCount = 0;
     var parts = new List<Part25D>();
     parts.Add(ChaosStar());
     foreach(Part25D p in parts)

@@ -71,16 +71,29 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using GCodeGeneratorNet.Core;
+using GCodeGeneratorNet.Core.Geometry;
 using GCodeGeneratorNet.Core.GCodes;
 using GCodeGeneratorNet.Core.Misc;
 
-public static IEnumerable<IGCode> Generate()
+public static GScriptResult Generate()
 {
     GCodeGenerator gcg = new GCodeGenerator();
-    return gcg.Codes;
-}
-
-";
+    gcg.HorizontalFeedRate = 500;
+    gcg.ToolRadius = 1f;
+    gcg.SafetyHeight = 2;
+    gcg.VerticalStep = 2;
+    gcg.MaterialHeight = 4;
+    gcg.BridgeCount = 0;
+    
+    var parts = new List<Part25D>();
+    var pb = new PartBuilder();
+    pb.AddCircle(new Vector2(10, 10), 10);
+    pb.CreateContour();
+    pb.AddCircle(new Vector2(10, 10), 5);
+    pb.CreateHole();
+    parts.Add(pb.CreatePart(gcg.MaterialHeight));
+    return new GScriptResult(gcg, parts);
+}";
             FilePath = null;
         }
 

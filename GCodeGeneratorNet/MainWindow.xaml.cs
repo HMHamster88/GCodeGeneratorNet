@@ -142,7 +142,7 @@ namespace GCodeGeneratorNet
         private void ExportGCode(string fileName)
         {
             var result = workspace.Compiler.Compile(workspace.TextEditManager.Text);
-            if (result != null)
+            if (result != null && result.Codes != null)
             {
                 if (File.Exists(fileName))
                 {

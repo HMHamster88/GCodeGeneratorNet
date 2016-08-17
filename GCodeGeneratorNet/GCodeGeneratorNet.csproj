@@ -91,6 +91,7 @@
     <Compile Include="Core\GCodes\GMOVE.cs" />
     <Compile Include="Core\GCodes\GARC.cs" />
     <Compile Include="Core\GCodes\G90.cs" />
+    <Compile Include="Core\GCodes\GSpindle.cs" />
     <Compile Include="Core\GCodes\IGCode.cs" />
     <Compile Include="Core\GCodes\Pause.cs" />
     <Compile Include="Core\Geometry\Arc.cs" />

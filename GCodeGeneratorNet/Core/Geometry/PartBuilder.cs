@@ -2,6 +2,8 @@
 using OpenTK;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -56,6 +58,44 @@ namespace GCodeGeneratorNet.Core.Geometry
             AddPoint(position + new Vector2(size.X, 0));
             AddPoint(position + size);
             AddPoint(position + new Vector2(0, size.Y));
+        }
+
+        public void AddRectFromCenter(Vector2 position, Vector2 size)
+        {
+            AddRect(position - size / 2, size);
+        }
+
+        public void AddPath(GraphicsPath gp, Matrix matrix, float flatness)
+        {
+            gp.Flatten(matrix, flatness);
+            Vector2 lastPos = new Vector2();
+            for (int i = 0; i < gp.PathPoints.Length; i++)
+            {
+                Vector2 v = new Vector2(gp.PathPoints[i].X, -gp.PathPoints[i].Y);
+                if (gp.PathTypes[i] == 0)
+                {
+                    if (i != 0)
+                    {
+                        CreateHole();
+                    }
+                    
+                    lastPos = v;
+                }
+                AddPoint(v);
+            }
+            CreateHole();
+        }
+
+        public void AddText(string text, FontFamily fontFamily, int style, float size, Matrix matrix, float flatness, bool centerd = true)
+        {
+            GraphicsPath gp = new GraphicsPath();
+            gp.AddString(text, fontFamily, style, size, new System.Drawing.Point(), System.Drawing.StringFormat.GenericDefault);
+            var m = new Matrix();
+            var bounds = gp.GetBounds();
+            if (centerd)
+                m.Translate(-(bounds.X + bounds.Width / 2), -(bounds.Y + gp.GetBounds().Height / 2));
+            gp.Transform(m);
+            AddPath(gp, matrix, flatness);
         }
 
         public Contour CreateContour()

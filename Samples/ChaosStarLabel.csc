@@ -9,7 +9,7 @@ using GCodeGeneratorNet.Core.Misc;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 
-static float materialHeight = 0;//1.5f;
+static float materialHeight = 6;//1.5f;
 static float radius = 28;
 static float arrowHeight = 0.3f;
 static float arrowWidth = 0.15f;
@@ -45,6 +45,18 @@ public static Part25D ChaosStar()
     	pb.AddPoint(a2.HorizontalVector * r3 * radius);
     	pb.CreateHole();
     }
+    
+    float fontSize = radius / 3;
+    FontFamily ff = new FontFamily("Georgia");
+    float flatness = 0.01f;
+    Matrix m = new Matrix();
+    m.Translate(0, -(radius + fontSize/2));
+    pb.AddText("Chaos", ff, 0, fontSize, m, flatness);
+    
+    m = new Matrix();
+    m.Translate(0, (radius + fontSize/2));
+    pb.AddText("Undivided", ff, 0, fontSize, m, flatness);
+    
     return pb.CreatePart(materialHeight);
 }
     
@@ -52,28 +64,20 @@ public static GScriptResult Generate()
 {
     GCodeGenerator gcg = new GCodeGenerator();
     gcg.ToolRadius = 0;
-    gcg.SafetyHeight = 4;
     gcg.VerticalStep = 0;
     gcg.BridgeCount = 0;
     gcg.MaterialHeight = materialHeight;
-    gcg.HorizontalFeedRate = 600;
+    gcg.HorizontalFeedRate = 500;
+    gcg.LaserMode = true;
+    gcg.SafetyHeight = 0;
+    gcg.GoToSafetyHeight();
     var parts = new List<Part25D>();
     parts.Add(ChaosStar());
     foreach(Part25D p in parts)
     {
     	gcg.Part25D(p);
     }
-    gcg.GoToSafetyHeight();
-    float fontSize = radius / 3;
-    FontFamily ff = new FontFamily("Georgia");
-    float flatness = 0.01f;
-    Matrix m = new Matrix();
-    m.Translate(0, -(radius + fontSize/2));
-    gcg.Text("Chaos", ff, 0, fontSize, m, 0, flatness);
-    
-    m = new Matrix();
-    m.Translate(0, (radius + fontSize/2));
-    gcg.Text("Undivided", ff, 0, fontSize, m, 0, flatness);
+
     return new GScriptResult(parts, gcg.Codes);
 }
 

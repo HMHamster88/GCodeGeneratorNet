@@ -15,6 +15,16 @@ namespace GCodeGeneratorNet.Core
         public IEnumerable<Part25D> Parts { get; private set; }
         public IEnumerable<IGCode> Codes { get; private set; }
 
+        public GScriptResult(GCodeGenerator gcg, IEnumerable<Part25D> parts)
+        {
+            this.Parts = parts;
+            foreach (Part25D p in parts)
+            {
+                gcg.Part25D(p);
+            }
+            this.Codes = gcg.Codes;
+        }
+
         public GScriptResult(IEnumerable<Part25D> parts, IEnumerable<IGCode> codes)
         {
             this.Parts = parts;

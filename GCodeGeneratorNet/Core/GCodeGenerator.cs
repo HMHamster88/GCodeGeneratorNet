@@ -51,6 +51,12 @@ namespace GCodeGeneratorNet.Core
         public float BridgeHeidht { get; set; }
         public int BridgeCount { get; set; }
 
+        public float MaxRpm { get; set; }
+
+        public bool LaserMode { get; set; }
+
+        public int LaserContourRepeatCount { get; set; }
+
         public GCodeGenerator()
         {
             MaterialHeight = 8;
@@ -63,10 +69,11 @@ namespace GCodeGeneratorNet.Core
             VerticalFeedRate = 100;
             VerticalStep = 2;
             codes.Add(new G90());
-            GoToSafetyHeight();
             BridgeWidth = 2;
             BridgeHeidht = 0.5f;
             BridgeCount = 1;
+            MaxRpm = 1000;
+            LaserContourRepeatCount = 1;
         }
 
         public IEnumerable<float> VerticalRange
@@ -123,6 +130,11 @@ namespace GCodeGeneratorNet.Core
             codes.Add(new GMOVE(true, position.X, position.Y, null));
         }
 
+        public void RapidMoveToZero()
+        {
+            codes.Add(new GMOVE(true, 0, 0, LaserMode?0.0f:(float?)null));
+        }
+
         public void VerticalFeedTo(float z)
         {
             codes.Add(new GMOVE(false, null, null, z, VerticalFeedRate));
@@ -131,6 +143,11 @@ namespace GCodeGeneratorNet.Core
         public void HorizontalFeedTo(Vector2 position)
         {
             codes.Add(new GMOVE(false, position.X, position.Y, null, HorizontalFeedRate));
+        }
+
+        public void SetSpindle(float rpm, RotateDirection direction = RotateDirection.CW)
+        {
+            codes.Add(new GSpindle(rpm, direction));
         }
 
         public void ContourAt(Contour contour, float z, float bridgeWidth, float bridgeHeight, int bridgeCount)
@@ -170,17 +187,36 @@ namespace GCodeGeneratorNet.Core
             codes.AddRange(contour.ToGCode(HorizontalFeedRate));
         }
 
+        public void LaserContour(Contour contour)
+        {
+            RapidMoveTo(contour.Parts.First().FirstPoint);
+            for (int i = 0; i < LaserContourRepeatCount; i++)
+            {
+                SetSpindle(MaxRpm);
+                codes.AddRange(contour.ToGCode(HorizontalFeedRate));
+                SetSpindle(0);
+            }
+        }
+
         public void Part25D(Part25D part)
         {
             if (part.Holes != null)
             {
                 foreach (var hole in part.Holes)
                 {
-                    GoToSafetyHeight();
                     var holePath = hole.Inflate(-ToolRadius);
-                    foreach (var z in range(part.Thickness - VerticalStep, 0, VerticalStep))
+                    if (LaserMode)
                     {
-                        ContourAt(holePath, z);
+                        VerticalFeedTo(MaterialHeight);
+                        LaserContour(holePath);
+                    }
+                    else
+                    {
+                        GoToSafetyHeight();
+                        foreach (var z in range(part.Thickness - VerticalStep, 0, VerticalStep))
+                        {
+                            ContourAt(holePath, z);
+                        }
                     }
                 }
             } 
@@ -197,23 +233,33 @@ namespace GCodeGeneratorNet.Core
                     }
                 }
             }
-
-            GoToSafetyHeight();
+            if (!LaserMode)
+            {
+                GoToSafetyHeight();
+            }
             var contourPath = part.Contour.Inflate(ToolRadius);
             if(contourPath.Parts.Count() == 0)
             {
                 return;
             }
-            var rng = range(part.Thickness - VerticalStep, 0, VerticalStep);
-            foreach (var z in rng)
+            if (LaserMode)
             {
-                if (z == rng.Last() && BridgeCount != 0)
+                VerticalFeedTo(MaterialHeight);
+                LaserContour(contourPath);
+            }
+            else
+            {
+                var rng = range(part.Thickness - VerticalStep, 0, VerticalStep);
+                foreach (var z in rng)
                 {
-                    ContourAt(contourPath, z, BridgeWidth, BridgeHeidht, BridgeCount);
-                }
-                else
-                {
-                    ContourAt(contourPath, z);
+                    if (z == rng.Last() && BridgeCount != 0)
+                    {
+                        ContourAt(contourPath, z, BridgeWidth, BridgeHeidht, BridgeCount);
+                    }
+                    else
+                    {
+                        ContourAt(contourPath, z);
+                    }
                 }
             }
         }
@@ -243,7 +289,15 @@ namespace GCodeGeneratorNet.Core
             Vector2 startOffset = center - start;
             Vector2 end = center + stopAngle.HorizontalVector * radius;
             HorizontalFeedTo(start);
+            if(LaserMode)
+            {
+                SetSpindle(MaxRpm);
+            }
             codes.Add(new GARC(end.X, end.Y, null, startOffset.X, startOffset.Y, dir, HorizontalFeedRate));
+            if (LaserMode)
+            {
+                SetSpindle(0);
+            }
         }
 
         public void HorizontalCircle(Vector2 center, float radius, RotateDirection dir, ToolCompensation compensation)
