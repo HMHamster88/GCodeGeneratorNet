@@ -30,16 +30,16 @@ namespace GCodeGeneratorNet
     public partial class MainWindow : Window
     {
         Workspace workspace;
-        ViewWindow pathView;
+        PathViewControl pathViewControl;
         public MainWindow()
         {
             InitializeComponent();
             this.DataContext =
             workspace = new Workspace();
-            ShowPathView();
             this.Closing += MainWindow_Closing;
             GDebug.WriteEvent += GDebug_debugEvent;
             GDebug.ClearEvent += GDebug_ClearEvent;
+            glHost.Child = pathViewControl = new PathViewControl();
         }
 
         void GDebug_ClearEvent(object sender, EventArgs e)
@@ -61,21 +61,6 @@ namespace GCodeGeneratorNet
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
-            ShowPathView();
-        }
-
-        private void ShowPathView()
-        {
-            if (pathView == null)
-            {
-                Task.Factory.StartNew(() =>
-                {
-                    pathView = new ViewWindow();
-                    pathView.Run(60.0, 0.0);
-                    pathView = null;
-                });
-                CompileAndView();
-            }
         }
 
         private void MenuItem_Click_1(object sender, RoutedEventArgs e)
@@ -83,12 +68,12 @@ namespace GCodeGeneratorNet
             CompileAndView();
         }
 
-        private void CompileAndView()
+        private async void CompileAndView()
         {
-            var result = workspace.Compiler.Compile(workspace.TextEditManager.Text);
-            if (pathView != null && result != null)
+            var result = await workspace.Compiler.AsyncCompile(workspace.TextEditManager.Text);
+            if (result != null)
             {
-                pathView.LoadPoints(result.ToPaths().ToArray());
+                pathViewControl.LoadPoints(result.ToPaths().ToArray());
             }
         }
 

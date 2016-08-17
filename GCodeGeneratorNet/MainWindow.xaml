@@ -1,10 +1,10 @@
-﻿<Window x:Class="GCodeGeneratorNet.MainWindow"
+﻿<Window xmlns:avalonDock="http://schemas.xceed.com/wpf/xaml/avalondock"  x:Class="GCodeGeneratorNet.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:gui="clr-namespace:GCodeGeneratorNet.Gui"
-        Title="{Binding TextEditManager.FilePath, StringFormat='GCGN - {0}'}" Height="700" Width="600" >
+        Title="{Binding TextEditManager.FilePath, StringFormat='GCGN - {0}'}" Height="700" Width="600" WindowState="Maximized" >
     <Window.CommandBindings>
         <CommandBinding Command="New" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="Save" Executed="CommandBinding_Executed_1"/>
@@ -19,7 +19,6 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition/>
-            <RowDefinition Height="0.3*"/>
         </Grid.RowDefinitions>
         <Menu Grid.ColumnSpan="2">
             <MenuItem Header="File">
@@ -34,22 +33,40 @@
                 <MenuItem Header="Show 3D" Click="MenuItem_Click"/>
             </MenuItem>
         </Menu>
-        <avalonEdit:TextEditor x:Name="sourceEditor" SyntaxHighlighting="C#" ShowLineNumbers="True"
+        <avalonDock:DockingManager Grid.Row="1">
+            <avalonDock:LayoutRoot>
+                <avalonDock:LayoutPanel Orientation="Vertical">
+                    <avalonDock:LayoutPanel Orientation="Horizontal">
+                        <avalonDock:LayoutAnchorablePane DockWidth="150">
+                        <avalonDock:LayoutAnchorable Title="Script">
+                            <avalonEdit:TextEditor x:Name="sourceEditor" SyntaxHighlighting="C#" ShowLineNumbers="True"
                                Grid.Row="1" FontFamily="Consolas" FontSize="10pt">
-            <i:Interaction.Behaviors>
-                <gui:AvalonEditBehaviour GiveMeTheText="{Binding TextEditManager.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-            </i:Interaction.Behaviors>
-        </avalonEdit:TextEditor>
-        <TabControl Grid.Row="2" >
-            <TabItem Header="Errors">
-                <ListView x:Name="errorList" Grid.Row="2" ItemsSource="{Binding Compiler.Errors}"
+                                <i:Interaction.Behaviors>
+                                    <gui:AvalonEditBehaviour GiveMeTheText="{Binding TextEditManager.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                </i:Interaction.Behaviors>
+                            </avalonEdit:TextEditor>
+                        </avalonDock:LayoutAnchorable>
+                    </avalonDock:LayoutAnchorablePane>
+                    <avalonDock:LayoutAnchorablePane DockWidth="150">
+                        <avalonDock:LayoutAnchorable Title="3D View">
+                            <WindowsFormsHost Grid.Row="3" Name="glHost"/>
+                        </avalonDock:LayoutAnchorable>
+                    </avalonDock:LayoutAnchorablePane>
+                 </avalonDock:LayoutPanel>
+                    <avalonDock:LayoutAnchorablePaneGroup>
+                        <avalonDock:LayoutAnchorablePane DockWidth="150">
+                            <avalonDock:LayoutAnchorable Title="Errors">
+                                <ListView x:Name="errorList" Grid.Row="2" ItemsSource="{Binding Compiler.Errors}"
                   SelectionChanged="ListView_SelectionChanged"/>
-            </TabItem>
-            <TabItem Header="Output">
-                <TextBox x:Name="debugView" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"/>
-            </TabItem>
-        </TabControl>
-        <GridSplitter Grid.Row="2" Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Top" ></GridSplitter>
+                            </avalonDock:LayoutAnchorable>
+                            <avalonDock:LayoutAnchorable Title="Debug">
+                                <TextBox x:Name="debugView" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"/>
+                            </avalonDock:LayoutAnchorable>
+                        </avalonDock:LayoutAnchorablePane>
+                    </avalonDock:LayoutAnchorablePaneGroup>
+                </avalonDock:LayoutPanel>
+            </avalonDock:LayoutRoot>
+        </avalonDock:DockingManager>
         
     </Grid>
 </Window>

@@ -1,46 +1,33 @@
-﻿using System;
-
-using OpenTK;
-using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
-using OpenTK.Input;
-using System.Drawing;
-using System.Diagnostics;
+﻿using OpenTK;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
+using System.Text;
+using System.Threading.Tasks;
+using OpenTK.Graphics.OpenGL;
+using System.Windows.Forms;
 
 namespace GCodeGeneratorNet.Graphics
 {
-    class ViewWindow : GameWindow
+    class PathViewControl : GLControl
     {
+        bool loaded = false;
         Vector3 viewRotation = new Vector3(-135, -45, 0);
         Vector3 viewPan;
         float viewScale = 1;
 
         IEnumerable<Path3D> paths;
 
-        public ViewWindow()
-            : base(800, 600)
+        System.Drawing.Point lastMousePoint;
+        MouseButtons lastButton;
+
+        public PathViewControl()
         {
-            Mouse.Move += Mouse_Move;
-            Mouse.WheelChanged += Mouse_WheelChanged;
-            this.Title = "3D View";
+            MouseMove += PathViewControl_MouseMove;
+            MouseWheel += PathViewControl_MouseWheel;
         }
 
-        public void LoadPoints(IEnumerable<Path3D> paths)
-        {
-            if(paths != null)
-            {
-                foreach (var path in paths)
-                {
-                    path.Dispose();
-                }
-            }
-            this.paths = paths;
-        }
-
-        void Mouse_WheelChanged(object sender, MouseWheelEventArgs e)
+        private void PathViewControl_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             if (e.Delta > 0)
             {
@@ -50,23 +37,42 @@ namespace GCodeGeneratorNet.Graphics
             {
                 viewScale *= 2;
             }
+            Invalidate();
         }
 
-        void Mouse_Move(object sender, MouseMoveEventArgs e)
+        private void PathViewControl_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            var ms = OpenTK.Input.Mouse.GetState();
-            if (ms.LeftButton == ButtonState.Pressed)
+            if(lastMousePoint != null && e.Button == lastButton)
             {
-                viewRotation.X += e.XDelta;
-                viewRotation.Y += e.YDelta;
-                Debug.WriteLine(viewRotation);
-            }
+                System.Drawing.Point delta = new System.Drawing.Point(e.Location.X - lastMousePoint.X,
+                    e.Location.Y - lastMousePoint.Y);
+                if (e.Button == MouseButtons.Left)
+                {
+                    viewRotation.X += delta.X;
+                    viewRotation.Y += delta.Y;
+                }
 
-            if (ms.MiddleButton == ButtonState.Pressed)
-            {
-                viewPan.X += e.XDelta;
-                viewPan.Y += e.YDelta;
+                if (e.Button == MouseButtons.Middle)
+                {
+                    viewPan.X += delta.X;
+                    viewPan.Y += delta.Y;
+                }
             }
+            lastMousePoint = e.Location;
+            lastButton = e.Button;
+            Invalidate();
+        }
+
+        public void LoadPoints(IEnumerable<Path3D> paths)
+        {
+            if (paths != null)
+            {
+                foreach (var path in paths)
+                {
+                    path.Dispose();
+                }
+            }
+            this.paths = paths;
         }
 
         protected override void OnLoad(EventArgs e)
@@ -83,12 +89,16 @@ namespace GCodeGeneratorNet.Graphics
 
             GL.ClearColor(System.Drawing.Color.MidnightBlue);
             GL.Enable(EnableCap.DepthTest);
+            loaded = true;
         }
 
         protected override void OnResize(EventArgs e)
         {
             base.OnResize(e);
-
+            if(!loaded)
+            {
+                return;
+            }
             GL.Viewport(0, 0, Width, Height);
 
             float aspect_ratio = Width / (float)Height;
@@ -97,25 +107,21 @@ namespace GCodeGeneratorNet.Graphics
             GL.LoadMatrix(ref perpective);
         }
 
-        protected override void OnUpdateFrame(FrameEventArgs e)
+        protected override void OnPaint(PaintEventArgs e)
         {
-            base.OnUpdateFrame(e);
-            if (Keyboard[OpenTK.Input.Key.Escape])
-                this.Exit();
-        }
-
-        protected override void OnRenderFrame(FrameEventArgs e)
-        {
-            base.OnRenderFrame(e);
-
-            if(paths != null)
-            foreach (var path in paths)
+            base.OnPaint(e);
+            if (!loaded)
             {
-                if (!path.Initalized)
-                {
-                    path.Init();
-                }
+                return;
             }
+            if (paths != null)
+                foreach (var path in paths)
+                {
+                    if (!path.Initalized)
+                    {
+                        path.Init();
+                    }
+                }
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
@@ -147,10 +153,10 @@ namespace GCodeGeneratorNet.Graphics
             GL.End();
 
             if (paths != null)
-            foreach (var path in paths)
-            {
-                path.Draw();
-            }
+                foreach (var path in paths)
+                {
+                    path.Draw();
+                }
 
             SwapBuffers();
         }

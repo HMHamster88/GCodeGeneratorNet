@@ -14,22 +14,26 @@ namespace GCodeGeneratorNet.Core
 {
     public class CsToGCodeCompiler
     {
+        public Task<GScriptResult> AsyncCompile(string code)
+        {
+            return Task<GScriptResult>.Factory.StartNew(() => Compile(code));
+        }
         public GScriptResult Compile(string code)
         {
-            Errors.Clear();
+            //Errors.Clear();
             try
             {
-                GDebug.Clear();
+                //GDebug.Clear();
                 var script = new AsmHelper(CSScript.LoadMethod(code));
                 return script.Invoke("*.Generate") as GScriptResult;
             }
             catch(CompilerException  ex)
             {
-                CompilerErrorCollection errs = (CompilerErrorCollection)ex.Data["Errors"];
+                /*CompilerErrorCollection errs = (CompilerErrorCollection)ex.Data["Errors"];
                 foreach (CompilerError err in errs)
                 {
                     errors.Add(err);
-                }
+                }*/
             }
             return null;
         }
